@@ -9,6 +9,8 @@ import {
   Eye,
   Download,
   Save,
+  Printer,
+  BadgePercent,
 } from 'lucide-react';
 import { formatTomans, toIntlPhone, toPersianDigits } from '../data/products';
 import {
@@ -21,13 +23,45 @@ import { AdminModal, Field, downloadFile, formatDateTime, inputCls } from './ui'
 
 interface AdminOrdersProps {
   orders: Order[];
+  brandName?: string;
   defaultTypeFilter?: 'all' | 'cart' | 'custom';
   onUpdateOrder: (orderId: string, patch: Partial<Order>) => void;
   onDeleteOrder: (orderId: string) => void;
 }
 
+function printInvoice(order: Order, brandName: string) {
+  const meta = orderStatusMeta(order.status);
+  const itemsRows =
+    order.type === 'custom' && order.customProject
+      ? `<tr><td>۱</td><td>${order.customProject.title}<br><small>${order.customProject.description}</small></td><td>۱</td><td>${order.total ? order.total.toLocaleString('en-US') : 'توافقی'}</td></tr>`
+      : order.items
+          .map(
+            (it, i) =>
+              `<tr><td>${i + 1}</td><td>${it.title}<br><small>${it.wood.name} • ${it.finish.name} • ${it.size.name}${it.engravingText ? ` • حکاکی: «${it.engravingText}»` : ''}</small></td><td>${it.quantity}</td><td>${(it.unitPrice * it.quantity).toLocaleString('en-US')}</td></tr>`
+          )
+          .join('');
+  const html = `<!doctype html><html lang="fa" dir="rtl"><head><meta charset="utf-8"><title>فاکتور ${order.code}</title>
+<style>body{font-family:Tahoma,sans-serif;color:#222;padding:32px;max-width:760px;margin:auto}h1{font-size:19px;margin:0}table{width:100%;border-collapse:collapse;margin-top:16px}th,td{border:1px solid #bbb;padding:8px;font-size:12px;text-align:right}th{background:#f3e7d7}.row{display:flex;justify-content:space-between;font-size:12px;padding:4px 0}.total{font-weight:bold;font-size:14px;border-top:2px solid #333;margin-top:8px;padding-top:8px}small{color:#666}</style></head>
+<body><h1>${brandName}</h1><p style="font-size:12px;color:#555">فاکتور سفارش ${order.code} — وضعیت: ${meta.label}</p>
+<div class="row"><span>مشتری: ${order.customer.fullName}</span><span>موبایل: ${order.customer.phone}</span></div>
+<div class="row"><span>شهر: ${order.customer.city || '—'}</span><span>نشانی: ${order.customer.address || '—'}</span></div>
+<table><thead><tr><th>ردیف</th><th>شرح</th><th>تعداد</th><th>مبلغ (تومان)</th></tr></thead><tbody>${itemsRows}</tbody></table>
+<div class="row"><span>جمع اقلام</span><span>${order.subtotal.toLocaleString('en-US')} تومان</span></div>
+${(order.discountAmount ?? 0) > 0 ? `<div class="row"><span>تخفیف ${order.couponCode ? `(کد ${order.couponCode})` : ''}</span><span>− ${(order.discountAmount ?? 0).toLocaleString('en-US')} تومان</span></div>` : ''}
+<div class="row"><span>هزینه ارسال</span><span>${order.shippingCost === 0 ? 'رایگان' : `${order.shippingCost.toLocaleString('en-US')} تومان`}</span></div>
+<div class="row total"><span>مبلغ قابل پرداخت</span><span>${order.total.toLocaleString('en-US')} تومان</span></div>
+<p style="font-size:11px;color:#666;margin-top:20px">این فاکتور توسط سامانه فروش ${brandName} صادر شده است.</p>
+<script>window.onload=()=>window.print()</script></body></html>`;
+  const win = window.open('', '_blank', 'width=820,height=900');
+  if (win) {
+    win.document.write(html);
+    win.document.close();
+  }
+}
+
 export const AdminOrders: React.FC<AdminOrdersProps> = ({
   orders,
+  brandName = 'کارگاه اُرسی',
   defaultTypeFilter = 'all',
   onUpdateOrder,
   onDeleteOrder,
@@ -37,6 +71,7 @@ export const AdminOrders: React.FC<AdminOrdersProps> = ({
   const [typeFilter, setTypeFilter] = useState<'all' | 'cart' | 'custom'>(defaultTypeFilter);
   const [selected, setSelected] = useState<Order | null>(null);
   const [adminNoteDraft, setAdminNoteDraft] = useState('');
+  const [quotedPrice, setQuotedPrice] = useState('');
 
   const filtered = useMemo(() => {
     const q = search.trim();
@@ -56,6 +91,7 @@ export const AdminOrders: React.FC<AdminOrdersProps> = ({
   const openDetail = (order: Order) => {
     setSelected(order);
     setAdminNoteDraft(order.adminNote);
+    setQuotedPrice(order.total > 0 ? String(order.total) : '');
   };
 
   const changeStatus = (order: Order, status: OrderStatus) => {
@@ -311,7 +347,49 @@ export const AdminOrders: React.FC<AdminOrdersProps> = ({
                       {selected.customProject.referenceLink}
                     </a>
                   )}
-                  <p className="text-[11px] text-[#8A7968]">مبلغ این سفارش پس از بررسی طرح تعیین و با مشتری نهایی می‌شود؛ وضعیت را از ستون روبه‌رو جلو ببرید.</p>
+                  <p className="text-[11px] text-[#8A7968]">مبلغ نهایی را اینجا ثبت کنید تا مشتری در بخش «پیگیری سفارش» آن را ببیند؛ وضعیت را هم از ستون روبه‌رو جلو ببرید.</p>
+                  <div className="pt-2 border-t border-white/10">
+                    <Field label="مبلغ نهایی اعلامی به مشتری (تومان)">
+                      <div className="flex gap-2">
+                        <input
+                          type="number"
+                          value={quotedPrice}
+                          onChange={(e) => setQuotedPrice(e.target.value)}
+                          placeholder="مثلاً: 18500000"
+                          className={inputCls}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const price = Number(quotedPrice) || 0;
+                            const updated = {
+                              ...selected,
+                              subtotal: price,
+                              total: price,
+                              updatedAt: Date.now(),
+                            };
+                            onUpdateOrder(selected.id, updated);
+                            setSelected(updated);
+                          }}
+                          className="btn-honey-gold px-4 rounded-xl text-xs font-black whitespace-nowrap cursor-pointer"
+                        >
+                          ثبت مبلغ
+                        </button>
+                      </div>
+                    </Field>
+                    {selected.total > 0 && (
+                      <div className="text-[11px] text-[#7FCB9B] mt-1.5">
+                        مبلغ فعلی اعلام‌شده: {formatTomans(selected.total)} تومان — مشتری در پیگیری سفارش همین مبلغ را می‌بیند.
+                      </div>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => printInvoice(selected, brandName)}
+                    className="w-full py-2.5 rounded-xl bg-white/5 border border-white/15 text-[#F7F2EB] text-xs font-bold flex items-center justify-center gap-2 cursor-pointer hover:border-[#D49B54]/50"
+                  >
+                    <Printer className="w-4 h-4 text-[#D49B54]" /> چاپ پیش‌فاکتور
+                  </button>
                 </div>
               ) : (
                 <div className="glass-panel rounded-2xl p-4 space-y-2.5">
@@ -334,9 +412,19 @@ export const AdminOrders: React.FC<AdminOrdersProps> = ({
                   ))}
                   <div className="pt-2 border-t border-white/10 space-y-1 text-xs">
                     <div className="flex justify-between text-[#C8B9A6]"><span>جمع اقلام:</span><span>{formatTomans(selected.subtotal)} تومان</span></div>
+                    {(selected.discountAmount ?? 0) > 0 && (
+                      <div className="flex justify-between text-[#7FCB9B]"><span className="flex items-center gap-1"><BadgePercent className="w-3.5 h-3.5" />تخفیف{selected.couponCode ? ` (کد ${selected.couponCode})` : ''}:</span><span>− {formatTomans(selected.discountAmount ?? 0)} تومان</span></div>
+                    )}
                     <div className="flex justify-between text-[#C8B9A6]"><span>هزینه ارسال:</span><span>{selected.shippingCost === 0 ? 'رایگان' : `${formatTomans(selected.shippingCost)} تومان`}</span></div>
                     <div className="flex justify-between font-black text-sm text-[#E5B26D]"><span>مبلغ کل:</span><span>{formatTomans(selected.total)} تومان</span></div>
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => printInvoice(selected, brandName)}
+                    className="w-full py-2.5 rounded-xl bg-white/5 border border-white/15 text-[#F7F2EB] text-xs font-bold flex items-center justify-center gap-2 cursor-pointer hover:border-[#D49B54]/50"
+                  >
+                    <Printer className="w-4 h-4 text-[#D49B54]" /> چاپ فاکتور این سفارش
+                  </button>
                 </div>
               )}
             </div>

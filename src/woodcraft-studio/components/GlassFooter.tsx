@@ -107,6 +107,7 @@ export const GlassFooter: React.FC<GlassFooterProps> = ({
                 <li><a href="#customizer" className="hover:text-[#E5B26D] transition-colors">• شخصی‌سازی و حکاکی آنلاین</a></li>
                 <li><a href="#custom-project" className="hover:text-[#E5B26D] transition-colors">• سفارش طرح دلخواه از روی عکس</a></li>
                 <li><a href="#faq" className="hover:text-[#E5B26D] transition-colors">• سوالات متداول</a></li>
+                <li><a href="#contact" className="hover:text-[#E5B26D] transition-colors">• تماس با کارگاه و ارسال پیام</a></li>
                 <li>
                   <button type="button" onClick={onOpenTracking} className="hover:text-[#E5B26D] transition-colors cursor-pointer inline-flex items-center gap-1.5">
                     <PackageSearch className="w-3.5 h-3.5" /> پیگیری سفارش با کد رهگیری

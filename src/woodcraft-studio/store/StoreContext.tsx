@@ -50,6 +50,10 @@ function loadDB(): StudioDB {
         : seed.testimonials,
       faqs: Array.isArray(parsed.faqs) ? parsed.faqs : seed.faqs,
       orders: Array.isArray(parsed.orders) ? parsed.orders : seed.orders,
+      contactMessages: Array.isArray(parsed.contactMessages)
+        ? parsed.contactMessages
+        : seed.contactMessages,
+      coupons: Array.isArray(parsed.coupons) ? parsed.coupons : seed.coupons,
     };
   } catch {
     return seed;
@@ -74,6 +78,8 @@ export interface CreateOrderInput {
   customProject?: CustomProjectInfo;
   subtotal: number;
   shippingCost: number;
+  discountAmount?: number;
+  couponCode?: string;
   total: number;
 }
 
@@ -89,6 +95,12 @@ interface StudioContextValue {
   updateCartQuantity: (cartItemId: string, delta: number) => void;
   clearCart: () => void;
   createOrder: (input: CreateOrderInput) => Order;
+  submitContactMessage: (input: {
+    name: string;
+    phone: string;
+    subject: string;
+    message: string;
+  }) => void;
   findOrder: (code: string, phone: string) => Order | undefined;
   isAdmin: boolean;
   login: (password: string) => boolean;
@@ -174,6 +186,8 @@ export const StudioProvider: React.FC<{ children: React.ReactNode }> = ({
       customProject: input.customProject,
       subtotal: input.subtotal,
       shippingCost: input.shippingCost,
+      discountAmount: input.discountAmount ?? 0,
+      couponCode: input.couponCode,
       total: input.total,
       status: 'new',
       adminNote: '',
@@ -184,6 +198,22 @@ export const StudioProvider: React.FC<{ children: React.ReactNode }> = ({
     setDb((prev) => ({ ...prev, orders: [created, ...prev.orders] }));
     return created;
   }, []);
+
+  const submitContactMessage = useCallback(
+    (input: { name: string; phone: string; subject: string; message: string }) => {
+      const msg = {
+        id: uid('msg'),
+        name: input.name,
+        phone: input.phone,
+        subject: input.subject,
+        message: input.message,
+        read: false,
+        createdAt: Date.now(),
+      };
+      setDb((prev) => ({ ...prev, contactMessages: [msg, ...prev.contactMessages] }));
+    },
+    []
+  );
 
   const findOrder = useCallback(
     (code: string, phone: string): Order | undefined => {
@@ -241,6 +271,7 @@ export const StudioProvider: React.FC<{ children: React.ReactNode }> = ({
       updateCartQuantity,
       clearCart,
       createOrder,
+      submitContactMessage,
       findOrder,
       isAdmin,
       login,
@@ -258,6 +289,7 @@ export const StudioProvider: React.FC<{ children: React.ReactNode }> = ({
       updateCartQuantity,
       clearCart,
       createOrder,
+      submitContactMessage,
       findOrder,
       isAdmin,
       login,

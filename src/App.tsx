@@ -25,6 +25,7 @@ export function App() {
   useEffect(() => {
     if (isAdminRoute) {
       window.scrollTo({ top: 0 });
+      document.title = 'پنل مدیریت کارگاه اُرسی';
     }
   }, [isAdminRoute]);
 

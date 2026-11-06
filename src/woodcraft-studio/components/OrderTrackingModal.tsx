@@ -169,12 +169,30 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({
                   {orderStatusMeta(result.status).customerLabel}
                 </span>
               </div>
+              {(result.discountAmount ?? 0) > 0 && (
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-[#C8B9A6]">
+                    تخفیف{result.couponCode ? ` (کد ${result.couponCode})` : ''}:
+                  </span>
+                  <span className="font-bold text-[#7FCB9B]">
+                    − {formatTomans(result.discountAmount ?? 0)} تومان
+                  </span>
+                </div>
+              )}
               {result.total > 0 && (
                 <div className="flex items-center justify-between text-xs pt-1 border-t border-white/10">
-                  <span className="text-[#C8B9A6]">مبلغ سفارش:</span>
+                  <span className="text-[#C8B9A6]">
+                    {result.type === 'custom' ? 'مبلغ اعلام‌شده توسط کارگاه:' : 'مبلغ سفارش:'}
+                  </span>
                   <span className="font-black text-[#E5B26D]">
                     {formatTomans(result.total)} تومان
                   </span>
+                </div>
+              )}
+              {result.type === 'custom' && result.total === 0 && (
+                <div className="text-[11px] text-[#8A7968] leading-relaxed">
+                  مبلغ دقیق این سفارش پس از بررسی طرح توسط کارگاه اعلام و همینجا نمایش داده
+                  می‌شود.
                 </div>
               )}
             </div>

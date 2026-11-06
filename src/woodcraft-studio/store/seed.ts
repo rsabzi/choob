@@ -345,5 +345,45 @@ export function createSeedDB(): StudioDB {
       },
     ],
     orders: seedOrders(),
+    contactMessages: [
+      {
+        id: 'seed-msg-1',
+        name: 'الهام کریمی',
+        phone: '09125557788',
+        subject: 'سوال درباره ساخت میز تحریر',
+        message:
+          'سلام، برای اتاق دخترم یک میز تحریر چوبی کوچک می‌خواهم. امکان ساخت با چوب راش روشن و کشوی مخفی هست؟ حدود قیمت چقدر می‌شود؟',
+        read: false,
+        createdAt: now - 7 * 60 * 60 * 1000,
+      },
+      {
+        id: 'seed-msg-2',
+        name: 'شرکت آوا تجهیز',
+        phone: '02188776655',
+        subject: 'درخواست کاتالوگ هدایای سازمانی',
+        message:
+          'سلام وقت بخیر، برای نوروز امسال حدود ۵۰ ست هدیه سازمانی می‌خواهیم. لطفاً شرایط همکاری و کاتالوگ را ارسال فرمایید.',
+        read: true,
+        createdAt: now - 2 * day,
+      },
+    ],
+    coupons: [
+      {
+        id: 'coupon-welcome',
+        code: 'ORSI10',
+        percent: 10,
+        minTotal: 2000000,
+        active: true,
+        description: '۱۰٪ تخفیف اولین سفارش بالای ۲ میلیون تومان',
+      },
+      {
+        id: 'coupon-nowruz',
+        code: 'NOWRUZ15',
+        percent: 15,
+        minTotal: 5000000,
+        active: false,
+        description: '۱۵٪ تخفیف ویژه نوروز (غیرفعال — نمونه)',
+      },
+    ],
   };
 }

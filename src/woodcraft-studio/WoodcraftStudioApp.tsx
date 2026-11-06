@@ -15,6 +15,7 @@ import { CustomOrderStudio } from './components/CustomOrderStudio';
 import { CustomProjectSection } from './components/CustomProjectSection';
 import { CraftsmanshipAndReviews } from './components/CraftsmanshipAndReviews';
 import { FaqSection } from './components/FaqSection';
+import { ContactSection } from './components/ContactSection';
 import { ProductDetailModal } from './components/ProductDetailModal';
 import { OrderCheckoutDrawer } from './components/OrderCheckoutDrawer';
 import { OrderTrackingModal } from './components/OrderTrackingModal';
@@ -34,6 +35,7 @@ export const WoodcraftStudioApp: React.FC = () => {
     updateCartQuantity,
     clearCart,
     createOrder,
+    submitContactMessage,
     findOrder,
   } = useStudio();
 
@@ -181,6 +183,8 @@ export const WoodcraftStudioApp: React.FC = () => {
           phoneDisplay={settings.phoneDisplay}
           onOpenTracking={() => setIsTrackingOpen(true)}
         />
+
+        <ContactSection settings={settings} onSubmitMessage={submitContactMessage} />
       </main>
 
       <GlassFooter
@@ -203,6 +207,7 @@ export const WoodcraftStudioApp: React.FC = () => {
         onClose={() => setIsDrawerOpen(false)}
         items={cartItems}
         settings={settings}
+        coupons={db.coupons}
         onRemoveItem={removeFromCart}
         onUpdateQuantity={updateCartQuantity}
         onClearCart={clearCart}
@@ -215,6 +220,8 @@ export const WoodcraftStudioApp: React.FC = () => {
             items: cartItems,
             subtotal: totals.subtotal,
             shippingCost: totals.shippingCost,
+            discountAmount: totals.discountAmount,
+            couponCode: totals.couponCode,
             total: totals.total,
           });
           return order.code;

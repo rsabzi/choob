@@ -20,7 +20,7 @@ import {
   normalizeIranPhone,
   toPersianDigits,
 } from '../data/products';
-import type { SiteSettings } from '../store/types';
+import type { Coupon, SiteSettings } from '../store/types';
 
 export interface CheckoutCustomerInput {
   fullName: string;
@@ -36,12 +36,19 @@ interface OrderCheckoutDrawerProps {
   onClose: () => void;
   items: OrderCartItem[];
   settings: SiteSettings;
+  coupons: Coupon[];
   onRemoveItem: (cartItemId: string) => void;
   onUpdateQuantity: (cartItemId: string, delta: number) => void;
   onClearCart: () => void;
   onSubmitOrder: (
     customer: CheckoutCustomerInput,
-    totals: { subtotal: number; shippingCost: number; total: number }
+    totals: {
+      subtotal: number;
+      shippingCost: number;
+      discountAmount: number;
+      couponCode?: string;
+      total: number;
+    }
   ) => string;
   onOpenTracking: () => void;
   onGoCustomProject: () => void;
@@ -52,6 +59,7 @@ export const OrderCheckoutDrawer: React.FC<OrderCheckoutDrawerProps> = ({
   onClose,
   items,
   settings,
+  coupons,
   onRemoveItem,
   onUpdateQuantity,
   onClearCart,
@@ -68,13 +76,42 @@ export const OrderCheckoutDrawer: React.FC<OrderCheckoutDrawerProps> = ({
   const [formError, setFormError] = useState('');
   const [submittedOrderCode, setSubmittedOrderCode] = useState<string | null>(null);
   const [submittedSummaryText, setSubmittedSummaryText] = useState('');
+  const [couponInput, setCouponInput] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
+  const [couponMsg, setCouponMsg] = useState('');
 
   if (!isOpen) return null;
 
   const subtotal = items.reduce((acc, item) => acc + item.unitPrice * item.quantity, 0);
+  const discountAmount =
+    appliedCoupon && subtotal >= appliedCoupon.minTotal
+      ? Math.round((subtotal * appliedCoupon.percent) / 100)
+      : 0;
   const shippingCost =
-    subtotal === 0 || subtotal >= settings.freeShippingThreshold ? 0 : settings.shippingCost;
-  const grandTotal = subtotal + shippingCost;
+    subtotal === 0 || subtotal - discountAmount >= settings.freeShippingThreshold
+      ? 0
+      : settings.shippingCost;
+  const grandTotal = subtotal - discountAmount + shippingCost;
+
+  const handleApplyCoupon = () => {
+    const code = couponInput.trim().toUpperCase();
+    if (!code) return;
+    const found = coupons.find((c) => c.active && c.code.toUpperCase() === code);
+    if (!found) {
+      setAppliedCoupon(null);
+      setCouponMsg('این کد تخفیف معتبر یا فعال نیست.');
+      return;
+    }
+    if (subtotal < found.minTotal) {
+      setAppliedCoupon(null);
+      setCouponMsg(
+        `این کد برای سفارش‌های بالای ${formatTomans(found.minTotal)} تومان است.`
+      );
+      return;
+    }
+    setAppliedCoupon(found);
+    setCouponMsg(`کد «${found.code}» اعمال شد؛ ${toPersianDigits(found.percent)}٪ تخفیف گرفتید.`);
+  };
 
   const handleSubmitOrder = (e: React.FormEvent) => {
     e.preventDefault();
@@ -102,7 +139,13 @@ export const OrderCheckoutDrawer: React.FC<OrderCheckoutDrawerProps> = ({
         contactChannel,
         note: carpenterNote.trim(),
       },
-      { subtotal, shippingCost, total: grandTotal }
+      {
+        subtotal,
+        shippingCost,
+        discountAmount,
+        couponCode: appliedCoupon && discountAmount > 0 ? appliedCoupon.code : undefined,
+        total: grandTotal,
+      }
     );
 
     const itemsSummary = items
@@ -440,11 +483,44 @@ export const OrderCheckoutDrawer: React.FC<OrderCheckoutDrawerProps> = ({
                 </div>
               </div>
 
+              {/* Discount coupon */}
+              <div>
+                <label className="block text-xs text-[#C8B9A6] mb-1.5">کد تخفیف (اگر دارید)</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    dir="ltr"
+                    value={couponInput}
+                    onChange={(e) => setCouponInput(e.target.value)}
+                    placeholder="ORSI10"
+                    className="flex-1 glass-input rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-[#F7F2EB] text-left font-mono"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleApplyCoupon}
+                    className="glass-pill px-4 py-2.5 rounded-xl text-xs font-bold text-[#F7F2EB] hover:border-[#D49B54]/60 cursor-pointer"
+                  >
+                    اعمال کد
+                  </button>
+                </div>
+                {couponMsg && (
+                  <p className={`text-[11px] mt-1.5 ${appliedCoupon ? 'text-[#7FCB9B]' : 'text-[#E87F7F]'}`}>
+                    {couponMsg}
+                  </p>
+                )}
+              </div>
+
               <div className="glass-panel rounded-2xl p-4 space-y-2 text-xs">
                 <div className="flex items-center justify-between text-[#C8B9A6]">
                   <span>جمع دست‌سازه‌ها و حکاکی لیزری:</span>
                   <span className="font-bold text-[#F7F2EB]">{formatTomans(subtotal)} تومان</span>
                 </div>
+                {discountAmount > 0 && (
+                  <div className="flex items-center justify-between text-[#7FCB9B]">
+                    <span>تخفیف کد «{appliedCoupon?.code}»:</span>
+                    <span className="font-bold">− {formatTomans(discountAmount)} تومان</span>
+                  </div>
+                )}
                 <div className="flex items-center justify-between text-[#C8B9A6]">
                   <span>
                     بسته‌بندی ضدضربه و ارسال (بالای {formatTomans(settings.freeShippingThreshold)}{' '}

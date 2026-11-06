@@ -9,6 +9,7 @@ import {
   PackageSearch,
   Layers,
   CircleHelp,
+  PhoneCall,
   Menu,
   X,
 } from 'lucide-react';
@@ -30,6 +31,7 @@ const NAV_LINKS = [
   { href: '#woods', label: 'شناخت چوب‌ها', icon: TreePine },
   { href: '#faq', label: 'سوالات متداول', icon: CircleHelp },
   { href: '#reviews', label: 'تجربه خریداران', icon: MessageSquareHeart },
+  { href: '#contact', label: 'تماس با کارگاه', icon: PhoneCall },
 ];
 
 export const GlassHeader: React.FC<GlassHeaderProps> = ({

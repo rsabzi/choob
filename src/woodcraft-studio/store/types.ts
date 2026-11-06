@@ -65,6 +65,8 @@ export interface Order {
   customProject?: CustomProjectInfo;
   subtotal: number;
   shippingCost: number;
+  discountAmount?: number;
+  couponCode?: string;
   total: number;
   status: OrderStatus;
   adminNote: string;
@@ -132,6 +134,25 @@ export interface FaqItem {
   active: boolean;
 }
 
+export interface ContactMessage {
+  id: string;
+  name: string;
+  phone: string;
+  subject: string;
+  message: string;
+  read: boolean;
+  createdAt: number;
+}
+
+export interface Coupon {
+  id: string;
+  code: string;
+  percent: number;
+  minTotal: number;
+  active: boolean;
+  description: string;
+}
+
 export interface StudioDB {
   version: number;
   settings: SiteSettings;
@@ -143,4 +164,6 @@ export interface StudioDB {
   testimonials: Testimonial[];
   faqs: FaqItem[];
   orders: Order[];
+  contactMessages: ContactMessage[];
+  coupons: Coupon[];
 }

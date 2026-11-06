@@ -22,7 +22,7 @@ import {
   type WoodSpecies,
 } from '../data/products';
 import { uid } from '../store/StoreContext';
-import type { FaqItem, ServiceItem, Testimonial } from '../store/types';
+import type { Coupon, FaqItem, ServiceItem, Testimonial } from '../store/types';
 import { SERVICE_ICON_OPTIONS, ServiceIcon } from '../components/ServicesSection';
 import { AdminModal, Field, Toggle, inputCls } from './ui';
 
@@ -246,6 +246,38 @@ const ProductsManager: React.FC<{
             </Field>
             <Field label="تصویر محصول (آدرس عکس)" className="md:col-span-2">
               <input dir="ltr" className={`${inputCls} text-left`} value={editing.image} onChange={(e) => setEditing({ ...editing, image: e.target.value })} />
+              <div className="flex items-center gap-2 mt-2.5 flex-wrap">
+                <label className="px-3.5 py-2 rounded-lg bg-[#D49B54]/15 border border-[#D49B54]/40 text-[#E5B26D] text-[11px] font-bold cursor-pointer">
+                  آپلود عکس از دستگاه
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      const reader = new FileReader();
+                      reader.onload = () => {
+                        const img = new Image();
+                        img.onload = () => {
+                          const canvas = document.createElement('canvas');
+                          const scale = Math.min(1, 1200 / img.width);
+                          canvas.width = Math.round(img.width * scale);
+                          canvas.height = Math.round(img.height * scale);
+                          canvas.getContext('2d')?.drawImage(img, 0, 0, canvas.width, canvas.height);
+                          setEditing((prev) =>
+                            prev ? { ...prev, image: canvas.toDataURL('image/jpeg', 0.85) } : prev
+                          );
+                        };
+                        img.src = String(reader.result);
+                      };
+                      reader.readAsDataURL(file);
+                      e.target.value = '';
+                    }}
+                  />
+                </label>
+                <span className="text-[10px] text-[#8A7968]">یا یکی از عکس‌های آماده کارگاه:</span>
+              </div>
               <div className="flex gap-2 mt-2 flex-wrap">
                 {IMAGE_PRESETS.map((src) => (
                   <button
@@ -661,9 +693,68 @@ const FaqsManager: React.FC<{
   );
 };
 
+/* --------------------------------- Coupons ----------------------------------- */
+
+const CouponsManager: React.FC<{
+  coupons: Coupon[];
+  onSave: (c: Coupon) => void;
+  onDelete: (id: string) => void;
+}> = ({ coupons, onSave, onDelete }) => {
+  const [editing, setEditing] = useState<Coupon | null>(null);
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <p className="text-xs text-[#C8B9A6]">مشتری کد را در سبد خرید وارد می‌کند و تخفیف خودکار روی جمع سفارش اعمال می‌شود.</p>
+        <button type="button" onClick={() => setEditing({ id: uid('coupon'), code: '', percent: 10, minTotal: 0, active: true, description: '' })} className="btn-honey-gold px-4 py-2.5 rounded-xl text-xs font-black flex items-center gap-2 cursor-pointer">
+          <Plus className="w-4 h-4" /> کد تخفیف جدید
+        </button>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {coupons.map((c) => (
+          <div key={c.id} className="glass-panel rounded-2xl p-4 flex items-start justify-between gap-3">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-mono font-black text-[#E5B26D]" dir="ltr">{c.code}</span>
+                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${c.active ? 'bg-[#4E9F6E]/20 text-[#7FCB9B]' : 'bg-[#D9534F]/15 text-[#E87F7F]'}`}>
+                  {c.active ? 'فعال' : 'غیرفعال'}
+                </span>
+              </div>
+              <div className="text-[11px] text-[#8A7968] mt-1">
+                {toPersianDigits(c.percent)}٪ تخفیف{c.minTotal > 0 ? ` — برای سفارش‌های بالای ${formatTomans(c.minTotal)} تومان` : ' — بدون حداقل مبلغ'}
+              </div>
+              {c.description && <div className="text-[11px] text-[#C8B9A6] mt-0.5">{c.description}</div>}
+            </div>
+            <div className="flex gap-1.5 shrink-0">
+              <button type="button" onClick={() => setEditing({ ...c })} className="px-3 py-1.5 rounded-lg bg-[#D49B54]/15 border border-[#D49B54]/40 text-[#E5B26D] text-[11px] font-bold flex items-center gap-1 cursor-pointer"><Pencil className="w-3 h-3" /> ویرایش</button>
+              <button type="button" onClick={() => window.confirm(`کد «${c.code}» حذف شود؟`) && onDelete(c.id)} className="w-7 h-7 rounded-lg bg-[#D9534F]/10 border border-[#D9534F]/30 flex items-center justify-center text-[#E87F7F] cursor-pointer"><Trash2 className="w-3.5 h-3.5" /></button>
+            </div>
+          </div>
+        ))}
+        {coupons.length === 0 && (
+          <div className="glass-panel rounded-2xl p-8 text-center text-xs text-[#8A7968] md:col-span-2">هنوز کد تخفیفی ساخته نشده است.</div>
+        )}
+      </div>
+      {editing && (
+        <AdminModal title="ویرایش کد تخفیف" onClose={() => setEditing(null)}>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <Field label="کد تخفیف (لاتین)"><input dir="ltr" className={`${inputCls} text-left font-mono`} value={editing.code} onChange={(e) => setEditing({ ...editing, code: e.target.value.toUpperCase() })} placeholder="ORSI10" /></Field>
+              <Field label="درصد تخفیف"><input type="number" min={1} max={90} className={inputCls} value={editing.percent} onChange={(e) => setEditing({ ...editing, percent: Math.min(90, Math.max(1, Number(e.target.value) || 1)) })} /></Field>
+            </div>
+            <Field label="حداقل مبلغ سفارش (تومان — ۰ یعنی بدون شرط)"><input type="number" className={inputCls} value={editing.minTotal} onChange={(e) => setEditing({ ...editing, minTotal: Number(e.target.value) || 0 })} /></Field>
+            <Field label="توضیح داخلی"><input className={inputCls} value={editing.description} onChange={(e) => setEditing({ ...editing, description: e.target.value })} placeholder="مثلاً: کمپین اولین خرید" /></Field>
+            <Toggle checked={editing.active} onChange={(v) => setEditing({ ...editing, active: v })} label="فعال" />
+          </div>
+          <button type="button" onClick={() => { if (!editing.code.trim()) { window.alert('کد تخفیف را وارد کنید.'); return; } onSave(editing); setEditing(null); }} className="mt-5 w-full btn-honey-gold py-3 rounded-xl text-xs font-black cursor-pointer">ذخیره کد تخفیف</button>
+        </AdminModal>
+      )}
+    </div>
+  );
+};
+
 /* --------------------------------- Export ------------------------------------ */
 
-export type ManageSection = 'products' | 'materials' | 'services' | 'testimonials' | 'faqs';
+export type ManageSection = 'products' | 'materials' | 'services' | 'testimonials' | 'faqs' | 'coupons';
 
 interface AdminManageProps {
   section: ManageSection;
@@ -674,6 +765,7 @@ interface AdminManageProps {
   services: ServiceItem[];
   testimonials: Testimonial[];
   faqs: FaqItem[];
+  coupons: Coupon[];
   onSaveProduct: (p: WoodProduct) => void;
   onDeleteProduct: (id: string) => void;
   onSaveWood: (w: WoodSpecies) => void;
@@ -688,6 +780,8 @@ interface AdminManageProps {
   onDeleteTestimonial: (id: string) => void;
   onSaveFaq: (f: FaqItem) => void;
   onDeleteFaq: (id: string) => void;
+  onSaveCoupon: (c: Coupon) => void;
+  onDeleteCoupon: (id: string) => void;
 }
 
 export const AdminManage: React.FC<AdminManageProps> = (props) => {
@@ -712,6 +806,8 @@ export const AdminManage: React.FC<AdminManageProps> = (props) => {
       return <TestimonialsManager testimonials={props.testimonials} onSave={props.onSaveTestimonial} onDelete={props.onDeleteTestimonial} />;
     case 'faqs':
       return <FaqsManager faqs={props.faqs} onSave={props.onSaveFaq} onDelete={props.onDeleteFaq} />;
+    case 'coupons':
+      return <CouponsManager coupons={props.coupons} onSave={props.onSaveCoupon} onDelete={props.onDeleteCoupon} />;
     default:
       return <ProductsManager products={props.products} woods={props.woods} onSave={props.onSaveProduct} onDelete={props.onDeleteProduct} />;
   }

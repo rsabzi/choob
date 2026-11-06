@@ -10,6 +10,8 @@ import {
   CircleHelp,
   Settings,
   Globe,
+  Mail,
+  BadgePercent,
   LogOut,
   Lock,
   TreePine as BrandIcon,
@@ -22,6 +24,7 @@ import { formatTomans, toPersianDigits } from '../data/products';
 import { useStudio } from '../store/StoreContext';
 import { ORDER_STATUSES, orderStatusMeta } from '../store/types';
 import { AdminOrders } from './AdminOrders';
+import { AdminMessages } from './AdminMessages';
 import { AdminManage, type ManageSection } from './AdminManage';
 import { AdminSettings } from './AdminSettings';
 import { formatDateTime } from './ui';
@@ -30,6 +33,7 @@ type AdminPage =
   | 'dashboard'
   | 'orders'
   | 'custom-orders'
+  | 'messages'
   | ManageSection
   | 'settings';
 
@@ -37,7 +41,9 @@ const NAV: { id: AdminPage; label: string; icon: React.ElementType }[] = [
   { id: 'dashboard', label: 'داشبورد', icon: LayoutDashboard },
   { id: 'orders', label: 'همه سفارش‌ها', icon: ShoppingBag },
   { id: 'custom-orders', label: 'درخواست‌های طرح سفارشی', icon: Wand2 },
+  { id: 'messages', label: 'پیام‌های تماس', icon: Mail },
   { id: 'products', label: 'محصولات و قیمت‌ها', icon: Package },
+  { id: 'coupons', label: 'کدهای تخفیف', icon: BadgePercent },
   { id: 'materials', label: 'چوب‌ها، پوشش و ابعاد', icon: TreePine },
   { id: 'services', label: 'خدمات کارگاه', icon: Layers },
   { id: 'testimonials', label: 'نظرات مشتریان', icon: MessageSquareHeart },
@@ -49,6 +55,8 @@ const PAGE_TITLES: Record<AdminPage, string> = {
   dashboard: 'داشبورد مدیریت کارگاه',
   orders: 'مدیریت سفارش‌ها',
   'custom-orders': 'درخواست‌های ساخت طرح سفارشی',
+  messages: 'پیام‌های تماس مشتریان',
+  coupons: 'کدهای تخفیف',
   products: 'محصولات، قیمت‌ها و ویترین',
   materials: 'متریال کارگاه: چوب، پوشش و ابعاد',
   services: 'خدمات کارگاه',
@@ -245,11 +253,12 @@ export const AdminApp: React.FC = () => {
   const [page, setPage] = useState<AdminPage>('dashboard');
 
   const newOrdersCount = db.orders.filter((o) => o.status === 'new').length;
+  const unreadMessagesCount = db.contactMessages.filter((m) => !m.read).length;
 
   if (!isAdmin) return <LoginScreen />;
 
   const upsert = <T extends { id: string }>(
-    key: 'products' | 'woods' | 'finishes' | 'sizes' | 'services' | 'testimonials' | 'faqs',
+    key: 'products' | 'woods' | 'finishes' | 'sizes' | 'services' | 'testimonials' | 'faqs' | 'coupons',
     item: T
   ) =>
     updateDB((prev) => {
@@ -263,7 +272,7 @@ export const AdminApp: React.FC = () => {
     });
 
   const remove = (
-    key: 'products' | 'woods' | 'finishes' | 'sizes' | 'services' | 'testimonials' | 'faqs',
+    key: 'products' | 'woods' | 'finishes' | 'sizes' | 'services' | 'testimonials' | 'faqs' | 'coupons',
     id: string
   ) =>
     updateDB((prev) => ({
@@ -308,6 +317,11 @@ export const AdminApp: React.FC = () => {
                     {item.id === 'orders' && newOrdersCount > 0 && (
                       <span className={`mr-auto min-w-[20px] h-5 px-1 rounded-full text-[10px] font-black flex items-center justify-center ${active ? 'bg-[#120E0A] text-[#D49B54]' : 'bg-[#D9534F] text-white'}`}>
                         {toPersianDigits(newOrdersCount)}
+                      </span>
+                    )}
+                    {item.id === 'messages' && unreadMessagesCount > 0 && (
+                      <span className={`mr-auto min-w-[20px] h-5 px-1 rounded-full text-[10px] font-black flex items-center justify-center ${active ? 'bg-[#120E0A] text-[#D49B54]' : 'bg-[#D9534F] text-white'}`}>
+                        {toPersianDigits(unreadMessagesCount)}
                       </span>
                     )}
                   </button>
@@ -360,6 +374,7 @@ export const AdminApp: React.FC = () => {
               <AdminOrders
                 key={page}
                 orders={db.orders}
+                brandName={db.settings.brandName}
                 defaultTypeFilter={page === 'custom-orders' ? 'custom' : 'all'}
                 onUpdateOrder={(orderId, patch) =>
                   updateDB((prev) => ({
@@ -376,10 +391,31 @@ export const AdminApp: React.FC = () => {
               />
             )}
 
+            {page === 'messages' && (
+              <AdminMessages
+                messages={db.contactMessages}
+                onMarkRead={(id, read) =>
+                  updateDB((prev) => ({
+                    ...prev,
+                    contactMessages: prev.contactMessages.map((m) =>
+                      m.id === id ? { ...m, read } : m
+                    ),
+                  }))
+                }
+                onDelete={(id) =>
+                  updateDB((prev) => ({
+                    ...prev,
+                    contactMessages: prev.contactMessages.filter((m) => m.id !== id),
+                  }))
+                }
+              />
+            )}
+
             {(page === 'products' ||
               page === 'materials' ||
               page === 'services' ||
               page === 'testimonials' ||
+              page === 'coupons' ||
               page === 'faqs') && (
               <AdminManage
                 section={page}
@@ -390,6 +426,7 @@ export const AdminApp: React.FC = () => {
                 services={db.services}
                 testimonials={db.testimonials}
                 faqs={db.faqs}
+                coupons={db.coupons}
                 onSaveProduct={(p) => upsert('products', p)}
                 onDeleteProduct={(id) => remove('products', id)}
                 onSaveWood={(w) => upsert('woods', w)}
@@ -404,6 +441,8 @@ export const AdminApp: React.FC = () => {
                 onDeleteTestimonial={(id) => remove('testimonials', id)}
                 onSaveFaq={(f) => upsert('faqs', f)}
                 onDeleteFaq={(id) => remove('faqs', id)}
+                onSaveCoupon={(c) => upsert('coupons', c)}
+                onDeleteCoupon={(id) => remove('coupons', id)}
               />
             )}
 
