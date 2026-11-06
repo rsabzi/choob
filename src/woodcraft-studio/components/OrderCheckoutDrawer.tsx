@@ -176,7 +176,7 @@ export const OrderCheckoutDrawer: React.FC<OrderCheckoutDrawerProps> = ({
       onClick={handleResetAndClose}
     >
       <div
-        className="glass-panel-elevated w-full max-w-xl h-full overflow-y-auto p-5 sm:p-7 flex flex-col animate-fadeIn"
+        className="glass-panel-elevated w-full max-w-xl h-full overflow-y-auto p-4 pb-safe sm:p-7 flex flex-col animate-fadeIn"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between pb-4 border-b border-[#FFF0DC]/15">
@@ -184,8 +184,8 @@ export const OrderCheckoutDrawer: React.FC<OrderCheckoutDrawerProps> = ({
             <div className="w-10 h-10 rounded-2xl bg-[#D49B54]/20 border border-[#D49B54]/40 flex items-center justify-center text-[#D49B54]">
               <ShoppingBag className="w-5 h-5" />
             </div>
-            <div>
-              <h3 className="text-lg font-black text-[#F7F2EB]">سبد سفارش اختصاصی کارگاه</h3>
+            <div className="min-w-0">
+              <h3 className="text-base sm:text-lg font-black text-[#F7F2EB]">سبد سفارش اختصاصی کارگاه</h3>
               <p className="text-xs text-[#C8B9A6]">
                 تایید مشخصات چوب، حکاکی لیزری و ثبت سفارش مستقیم برای مدیریت
               </p>
@@ -194,7 +194,7 @@ export const OrderCheckoutDrawer: React.FC<OrderCheckoutDrawerProps> = ({
           <button
             type="button"
             onClick={handleResetAndClose}
-            className="w-9 h-9 rounded-full glass-pill flex items-center justify-center text-[#C8B9A6] hover:text-[#F7F2EB] cursor-pointer"
+            className="w-9 h-9 rounded-full glass-pill flex items-center justify-center text-[#C8B9A6] hover:text-[#F7F2EB] cursor-pointer shrink-0"
             aria-label="بستن سبد سفارش"
           >
             <X className="w-5 h-5" />
@@ -511,28 +511,28 @@ export const OrderCheckoutDrawer: React.FC<OrderCheckoutDrawerProps> = ({
               </div>
 
               <div className="glass-panel rounded-2xl p-4 space-y-2 text-xs">
-                <div className="flex items-center justify-between text-[#C8B9A6]">
-                  <span>جمع دست‌سازه‌ها و حکاکی لیزری:</span>
-                  <span className="font-bold text-[#F7F2EB]">{formatTomans(subtotal)} تومان</span>
+                <div className="flex items-center justify-between gap-3 text-[#C8B9A6]">
+                  <span className="min-w-0">جمع دست‌سازه‌ها و حکاکی لیزری:</span>
+                  <span className="font-bold text-[#F7F2EB] whitespace-nowrap">{formatTomans(subtotal)} تومان</span>
                 </div>
                 {discountAmount > 0 && (
-                  <div className="flex items-center justify-between text-[#7FCB9B]">
+                  <div className="flex items-center justify-between gap-3 text-[#7FCB9B]">
                     <span>تخفیف کد «{appliedCoupon?.code}»:</span>
-                    <span className="font-bold">− {formatTomans(discountAmount)} تومان</span>
+                    <span className="font-bold whitespace-nowrap">− {formatTomans(discountAmount)} تومان</span>
                   </div>
                 )}
-                <div className="flex items-center justify-between text-[#C8B9A6]">
-                  <span>
+                <div className="flex items-center justify-between gap-3 text-[#C8B9A6]">
+                  <span className="min-w-0">
                     بسته‌بندی ضدضربه و ارسال (بالای {formatTomans(settings.freeShippingThreshold)}{' '}
                     تومان رایگان):
                   </span>
-                  <span className="font-bold text-[#4E9F6E]">
+                  <span className="font-bold text-[#4E9F6E] whitespace-nowrap">
                     {shippingCost === 0 ? 'رایگان' : `${formatTomans(shippingCost)} تومان`}
                   </span>
                 </div>
-                <div className="pt-2 border-t border-white/10 flex items-center justify-between text-sm sm:text-base font-black text-[#F7F2EB]">
+                <div className="pt-2 border-t border-white/10 flex items-center justify-between gap-3 text-sm sm:text-base font-black text-[#F7F2EB]">
                   <span>مبلغ قابل پرداخت:</span>
-                  <span className="text-[#E5B26D]">{formatTomans(grandTotal)} تومان</span>
+                  <span className="text-[#E5B26D] whitespace-nowrap">{formatTomans(grandTotal)} تومان</span>
                 </div>
               </div>
 

@@ -117,7 +117,7 @@ export const PortfolioGallery: React.FC<PortfolioGalleryProps> = ({
   };
 
   return (
-    <section id="portfolio" className="relative py-20 md:py-24 px-4 sm:px-6 lg:px-8 scroll-mt-24">
+    <section id="portfolio" className="relative py-16 sm:py-20 md:py-24 px-4 sm:px-6 lg:px-8 scroll-mt-24 overflow-x-clip">
       <div className="pointer-events-none absolute top-1/3 left-1/2 -translate-x-1/2 w-[620px] h-[340px] rounded-full bg-[#D49B54]/10 blur-[140px]" />
 
       <div className="max-w-[1360px] mx-auto">
@@ -138,7 +138,7 @@ export const PortfolioGallery: React.FC<PortfolioGalleryProps> = ({
           </div>
 
           {/* Wood Filter Pills */}
-          <div className="glass-panel rounded-2xl p-2.5 flex items-center gap-2 flex-wrap self-start md:self-auto">
+          <div className="glass-panel rounded-2xl p-2.5 flex items-center gap-2 flex-wrap self-start md:self-auto max-w-full">
             <span className="text-xs text-[#C8B9A6] px-2 flex items-center gap-1.5">
               <SlidersHorizontal className="w-3.5 h-3.5 text-[#D49B54]" />
               فیلتر نوع چوب:
@@ -349,7 +349,7 @@ export const PortfolioGallery: React.FC<PortfolioGalleryProps> = ({
                     </div>
                   </div>
 
-                  <div className="mt-5 pt-4 border-t border-[#FFF0DC]/12 flex items-center justify-between gap-2">
+                  <div className="mt-5 pt-4 border-t border-[#FFF0DC]/12 flex flex-wrap items-end justify-between gap-x-2 gap-y-3">
                     <div>
                       <span className="text-[11px] text-[#8A7968] block">شروع قیمت ساخت:</span>
                       <div className="text-base sm:text-lg font-black text-[#F7F2EB] tabular-nums-fa">
@@ -358,7 +358,7 @@ export const PortfolioGallery: React.FC<PortfolioGalleryProps> = ({
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <button
                         type="button"
                         onClick={() => handleQuickAdd(product)}

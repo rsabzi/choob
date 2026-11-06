@@ -139,21 +139,21 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             </div>
 
             {/* Trust Metrics (editable from admin) */}
-            <div className="grid grid-cols-3 gap-3 sm:gap-5 pt-3 w-full border-t border-[#FFF0DC]/10">
+            <div className="grid grid-cols-3 gap-2 sm:gap-5 pt-3 w-full border-t border-[#FFF0DC]/10">
               {settings.heroStats.slice(0, 3).map((stat, idx) => {
                 const Icon = STAT_ICONS[idx % STAT_ICONS.length];
                 return (
                   <div key={idx} className="flex items-start gap-2.5">
                     <Icon
-                      className={`w-5 h-5 shrink-0 mt-1 ${
+                      className={`w-5 h-5 shrink-0 mt-1 hidden min-[420px]:block ${
                         idx === 0 ? 'text-[#4E9F6E]' : 'text-[#D49B54]'
                       }`}
                     />
                     <div>
-                      <div className="text-sm sm:text-base font-extrabold text-[#F7F2EB]">
+                      <div className="text-[13px] sm:text-base font-extrabold text-[#F7F2EB] leading-snug">
                         {stat.value}
                       </div>
-                      <p className="text-[11px] sm:text-xs text-[#C8B9A6]">{stat.label}</p>
+                      <p className="text-[10px] sm:text-xs text-[#C8B9A6] leading-snug">{stat.label}</p>
                     </div>
                   </div>
                 );
@@ -162,14 +162,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           </div>
 
           {/* Visual Stage Column */}
-          <div className="lg:col-span-5 relative">
+          <div className="lg:col-span-5 relative w-full max-w-[560px] mx-auto lg:max-w-none">
             <div className="relative glass-panel-elevated rounded-[28px] p-3.5 sm:p-5 overflow-hidden group">
               <div
                 className="pointer-events-none absolute inset-0 transition-colors duration-700 z-10 rounded-[24px]"
                 style={{ backgroundColor: activeWood.tintOverlay, mixBlendMode: 'soft-light' }}
               />
 
-              <div className="relative rounded-[22px] overflow-hidden aspect-[4/4.3] bg-[#18120C]">
+              <div className="relative rounded-[22px] overflow-hidden aspect-[4/3.4] sm:aspect-[4/3.6] lg:aspect-[4/4.3] bg-[#18120C]">
                 <img
                   src={settings.heroImage}
                   alt="مجموعه دست‌سازه‌های چوبی کارگاه"
@@ -181,7 +181,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                   <button
                     type="button"
                     onClick={() => onQuickInspect(clockProduct)}
-                    className="absolute top-5 right-5 z-20 glass-panel hover:border-[#D49B54] px-3.5 py-2 rounded-2xl text-right transition-all cursor-pointer group/spot max-w-[230px]"
+                    className="absolute top-3.5 right-3.5 sm:top-5 sm:right-5 z-20 glass-panel hover:border-[#D49B54] px-3 py-2 sm:px-3.5 rounded-2xl text-right transition-all cursor-pointer group/spot max-w-[172px] min-[420px]:max-w-[230px]"
                   >
                     <div className="flex items-center gap-2">
                       <span className="w-2.5 h-2.5 rounded-full bg-[#D49B54] ring-4 ring-[#D49B54]/25 shrink-0" />
@@ -199,7 +199,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                   <button
                     type="button"
                     onClick={() => onQuickInspect(laptopProduct)}
-                    className="absolute bottom-28 right-5 z-20 glass-panel hover:border-[#D49B54] px-3.5 py-2 rounded-2xl text-right transition-all cursor-pointer group/spot max-w-[230px]"
+                    className="absolute bottom-24 sm:bottom-28 right-3.5 sm:right-5 z-20 glass-panel hover:border-[#D49B54] px-3 py-2 sm:px-3.5 rounded-2xl text-right transition-all cursor-pointer group/spot max-w-[172px] min-[420px]:max-w-[230px]"
                   >
                     <div className="flex items-center gap-2">
                       <span className="w-2.5 h-2.5 rounded-full bg-[#4E9F6E] ring-4 ring-[#4E9F6E]/25 shrink-0" />

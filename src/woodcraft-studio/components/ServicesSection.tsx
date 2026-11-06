@@ -59,7 +59,7 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
 }) => {
   if (services.length === 0) return null;
   return (
-    <section id="services" className="relative py-20 md:py-24 px-4 sm:px-6 lg:px-8 scroll-mt-24">
+    <section id="services" className="relative py-16 sm:py-20 md:py-24 px-4 sm:px-6 lg:px-8 scroll-mt-24 overflow-x-clip">
       <div className="pointer-events-none absolute top-0 right-1/3 w-[480px] h-[300px] rounded-full bg-[#D49B54]/8 blur-[130px]" />
       <div className="max-w-[1360px] mx-auto">
         <div className="text-center max-w-3xl mx-auto mb-12">
@@ -87,7 +87,7 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
                   <div className="w-12 h-12 rounded-2xl bg-[#D49B54]/15 border border-[#D49B54]/35 flex items-center justify-center text-[#D49B54]">
                     <ServiceIcon name={service.icon} />
                   </div>
-                  <span className="px-3 py-1 rounded-full bg-[#4E9F6E]/15 border border-[#4E9F6E]/30 text-[11px] font-bold text-[#7FCB9B]">
+                  <span className="px-3 py-1 rounded-full bg-[#4E9F6E]/15 border border-[#4E9F6E]/30 text-[11px] font-bold text-[#7FCB9B] min-w-0 text-center leading-relaxed">
                     {service.priceLabel}
                   </span>
                 </div>

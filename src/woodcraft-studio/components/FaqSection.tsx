@@ -13,7 +13,7 @@ export const FaqSection: React.FC<FaqSectionProps> = ({ faqs, phoneDisplay, onOp
   if (faqs.length === 0) return null;
 
   return (
-    <section id="faq" className="relative py-20 px-4 sm:px-6 lg:px-8 scroll-mt-24">
+    <section id="faq" className="relative py-16 sm:py-20 px-4 sm:px-6 lg:px-8 scroll-mt-24 overflow-x-clip">
       <div className="max-w-[900px] mx-auto">
         <div className="text-center mb-10">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-pill text-xs font-bold text-[#D49B54] mb-3 border border-[#D49B54]/30">
@@ -54,7 +54,7 @@ export const FaqSection: React.FC<FaqSectionProps> = ({ faqs, phoneDisplay, onOp
           })}
         </div>
 
-        <div className="glass-panel rounded-2xl mt-6 p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="glass-panel rounded-2xl mt-6 p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <PhoneCall className="w-5 h-5 text-[#D49B54]" />
             <p className="text-xs sm:text-sm text-[#C8B9A6]">

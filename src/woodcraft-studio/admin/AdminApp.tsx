@@ -159,7 +159,7 @@ const Dashboard: React.FC<{ onGoOrders: () => void }> = ({ onGoOrders }) => {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
         {cards.map((card) => (
           <div key={card.label} className="glass-panel rounded-2xl p-5">
             <div
@@ -168,7 +168,7 @@ const Dashboard: React.FC<{ onGoOrders: () => void }> = ({ onGoOrders }) => {
             >
               <card.icon className="w-5 h-5" style={{ color: card.color }} />
             </div>
-            <div className="text-lg sm:text-xl font-black text-[#F7F2EB]">{card.value}</div>
+            <div className="text-[15px] min-[420px]:text-lg sm:text-xl font-black text-[#F7F2EB] leading-snug break-words">{card.value}</div>
             <div className="text-[11px] text-[#8A7968] mt-0.5">{card.label}</div>
           </div>
         ))}
@@ -219,7 +219,7 @@ const Dashboard: React.FC<{ onGoOrders: () => void }> = ({ onGoOrders }) => {
                   key={o.id}
                   type="button"
                   onClick={onGoOrders}
-                  className="w-full flex items-center gap-3 bg-[#120E0A]/50 hover:bg-[#120E0A]/80 border border-white/8 rounded-xl p-3 text-right transition-colors cursor-pointer"
+                  className="w-full flex flex-wrap sm:flex-nowrap items-center gap-x-3 gap-y-1.5 bg-[#120E0A]/50 hover:bg-[#120E0A]/80 border border-white/8 rounded-xl p-3 text-right transition-colors cursor-pointer"
                 >
                   <span className="font-mono text-[11px] font-bold text-[#E5B26D]" dir="ltr">{o.code}</span>
                   <span className="flex-1 min-w-0">
@@ -284,8 +284,8 @@ export const AdminApp: React.FC = () => {
     <div className="min-h-screen bg-[#0D0A07] text-[#F7F2EB]">
       <div className="flex flex-col lg:flex-row min-h-screen">
         {/* Sidebar */}
-        <aside className="lg:w-72 shrink-0 lg:sticky lg:top-0 lg:h-screen p-4">
-          <div className="glass-panel-elevated rounded-[24px] p-5 lg:h-full flex flex-col">
+        <aside className="lg:w-72 shrink-0 lg:sticky lg:top-0 lg:h-screen p-3 sm:p-4">
+          <div className="glass-panel-elevated rounded-[24px] p-4 sm:p-5 lg:h-full flex flex-col">
             <div className="flex items-center gap-3 pb-5 border-b border-[#FFF0DC]/10">
               <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#E5B26D] via-[#B86B35] to-[#4A2F1D] p-[1.5px] shrink-0">
                 <div className="w-full h-full rounded-full bg-[#16100B] flex items-center justify-center">
@@ -293,7 +293,7 @@ export const AdminApp: React.FC = () => {
                 </div>
               </div>
               <div className="min-w-0">
-                <div className="text-sm font-black truncate">{db.settings.brandName}</div>
+                <div className="text-sm font-black truncate max-w-[170px] sm:max-w-none">{db.settings.brandName}</div>
                 <div className="text-[11px] text-[#D49B54]">پنل مدیریت کارگاه</div>
               </div>
             </div>
@@ -348,7 +348,7 @@ export const AdminApp: React.FC = () => {
         </aside>
 
         {/* Main */}
-        <main className="flex-1 min-w-0 p-4 lg:p-6 lg:pl-8">
+        <main className="flex-1 min-w-0 p-3 sm:p-4 lg:p-6 lg:pl-8">
           <div className="max-w-[1200px] mx-auto">
             <div className="flex items-end justify-between gap-3 mb-6 flex-wrap">
               <div>

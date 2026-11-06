@@ -100,7 +100,7 @@ export const CustomProjectSection: React.FC<CustomProjectSectionProps> = ({
     : '';
 
   return (
-    <section id="custom-project" className="relative py-20 md:py-24 px-4 sm:px-6 lg:px-8 scroll-mt-24">
+    <section id="custom-project" className="relative py-16 sm:py-20 md:py-24 px-4 sm:px-6 lg:px-8 scroll-mt-24 overflow-x-clip">
       <div className="pointer-events-none absolute top-1/4 left-10 w-[420px] h-[420px] rounded-full bg-[#B86B35]/15 blur-[130px]" />
       <div className="max-w-[1100px] mx-auto">
         <div className="text-center max-w-3xl mx-auto mb-10">
@@ -117,7 +117,7 @@ export const CustomProjectSection: React.FC<CustomProjectSectionProps> = ({
           </p>
         </div>
 
-        <div className="glass-panel-elevated rounded-[28px] p-5 sm:p-8">
+        <div className="glass-panel-elevated rounded-[28px] p-4 sm:p-8">
           {createdOrder ? (
             <div className="text-center py-6 space-y-5">
               <div className="w-20 h-20 rounded-full bg-[#4E9F6E]/20 border-2 border-[#4E9F6E] flex items-center justify-center mx-auto text-[#4E9F6E]">

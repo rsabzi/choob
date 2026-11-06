@@ -83,7 +83,7 @@ export const AdminSettings: React.FC<AdminSettingsProps> = ({
   return (
     <div className="space-y-6">
       {/* Brand & Hero */}
-      <section className="glass-panel rounded-2xl p-5">
+      <section className="glass-panel rounded-2xl p-4 sm:p-5">
         <h3 className="text-sm font-black text-[#F7F2EB] flex items-center gap-2 mb-4">
           <Type className="w-4 h-4 text-[#D49B54]" /> برند و متن‌های بخش اصلی (Hero)
         </h3>
@@ -100,7 +100,7 @@ export const AdminSettings: React.FC<AdminSettingsProps> = ({
         </div>
 
         <h4 className="text-xs font-black text-[#C8B9A6] mt-6 mb-3">سه آمار اعتماد زیر تیتر اصلی</h4>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {draft.heroStats.map((stat, idx) => (
             <div key={idx} className="grid grid-cols-2 gap-2">
               <Field label={`مقدار ${idx + 1}`}>
@@ -128,7 +128,7 @@ export const AdminSettings: React.FC<AdminSettingsProps> = ({
       </section>
 
       {/* Contact */}
-      <section className="glass-panel rounded-2xl p-5">
+      <section className="glass-panel rounded-2xl p-4 sm:p-5">
         <h3 className="text-sm font-black text-[#F7F2EB] flex items-center gap-2 mb-4">
           <PhoneCall className="w-4 h-4 text-[#D49B54]" /> اطلاعات تماس و شبکه‌های اجتماعی
         </h3>
@@ -144,7 +144,7 @@ export const AdminSettings: React.FC<AdminSettingsProps> = ({
       </section>
 
       {/* Shipping & Prices */}
-      <section className="glass-panel rounded-2xl p-5">
+      <section className="glass-panel rounded-2xl p-4 sm:p-5">
         <h3 className="text-sm font-black text-[#F7F2EB] flex items-center gap-2 mb-4">
           <Truck className="w-4 h-4 text-[#D49B54]" /> ارسال و مبالغ عمومی
         </h3>
@@ -160,7 +160,7 @@ export const AdminSettings: React.FC<AdminSettingsProps> = ({
       </section>
 
       {/* Security */}
-      <section className="glass-panel rounded-2xl p-5">
+      <section className="glass-panel rounded-2xl p-4 sm:p-5">
         <h3 className="text-sm font-black text-[#F7F2EB] flex items-center gap-2 mb-4">
           <KeyRound className="w-4 h-4 text-[#D49B54]" /> امنیت پنل مدیریت
         </h3>
@@ -180,7 +180,7 @@ export const AdminSettings: React.FC<AdminSettingsProps> = ({
       </section>
 
       {/* Data management */}
-      <section className="glass-panel rounded-2xl p-5 border-[#E87F7F]/25">
+      <section className="glass-panel rounded-2xl p-4 sm:p-5 border-[#E87F7F]/25">
         <h3 className="text-sm font-black text-[#F7F2EB] flex items-center gap-2 mb-2">
           <Database className="w-4 h-4 text-[#D49B54]" /> مدیریت داده‌ها و پشتیبان‌گیری
         </h3>

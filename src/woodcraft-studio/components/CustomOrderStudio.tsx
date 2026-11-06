@@ -101,7 +101,7 @@ export const CustomOrderStudio: React.FC<CustomOrderStudioProps> = ({
   return (
     <section
       id="customizer"
-      className="relative py-20 md:py-24 px-4 sm:px-6 lg:px-8 scroll-mt-20"
+      className="relative py-16 sm:py-20 md:py-24 px-4 sm:px-6 lg:px-8 scroll-mt-20 overflow-x-clip"
     >
       {/* Ambient Workshop Backlight */}
       <div
@@ -130,8 +130,8 @@ export const CustomOrderStudio: React.FC<CustomOrderStudioProps> = ({
           {/* Right 7 Columns: Step-by-Step Interactive Controls */}
           <div className="lg:col-span-7 space-y-6">
             {/* Step 1: Select Base Product */}
-            <div className="glass-panel rounded-[24px] p-5 sm:p-6">
-              <div className="flex items-center justify-between mb-4">
+            <div className="glass-panel rounded-[24px] p-4 sm:p-6">
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
                 <h3 className="text-base sm:text-lg font-extrabold text-[#F7F2EB] flex items-center gap-2.5">
                   <span className="w-7 h-7 rounded-full bg-[#D49B54] text-[#120E0A] text-xs font-black flex items-center justify-center tabular-nums-fa">
                     {toPersianDigits(1)}
@@ -179,8 +179,8 @@ export const CustomOrderStudio: React.FC<CustomOrderStudioProps> = ({
             </div>
 
             {/* Step 2: Select Natural Wood Species */}
-            <div className="glass-panel rounded-[24px] p-5 sm:p-6">
-              <div className="flex items-center justify-between mb-4">
+            <div className="glass-panel rounded-[24px] p-4 sm:p-6">
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
                 <h3 className="text-base sm:text-lg font-extrabold text-[#F7F2EB] flex items-center gap-2.5">
                   <span className="w-7 h-7 rounded-full bg-[#D49B54] text-[#120E0A] text-xs font-black flex items-center justify-center tabular-nums-fa">
                     {toPersianDigits(2)}
@@ -236,7 +236,7 @@ export const CustomOrderStudio: React.FC<CustomOrderStudioProps> = ({
             </div>
 
             {/* Step 3: Select Protective Finish & Dimensions */}
-            <div className="glass-panel rounded-[24px] p-5 sm:p-6 space-y-6">
+            <div className="glass-panel rounded-[24px] p-4 sm:p-6 space-y-6">
               <div>
                 <h3 className="text-base sm:text-lg font-extrabold text-[#F7F2EB] flex items-center gap-2.5 mb-4">
                   <span className="w-7 h-7 rounded-full bg-[#D49B54] text-[#120E0A] text-xs font-black flex items-center justify-center tabular-nums-fa">
@@ -335,7 +335,7 @@ export const CustomOrderStudio: React.FC<CustomOrderStudioProps> = ({
             </div>
 
             {/* Step 4: Laser Engraving & Gift Box */}
-            <div className="glass-panel rounded-[24px] p-5 sm:p-6 space-y-5">
+            <div className="glass-panel rounded-[24px] p-4 sm:p-6 space-y-5">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <h3 className="text-base sm:text-lg font-extrabold text-[#F7F2EB] flex items-center gap-2.5">
                   <span className="w-7 h-7 rounded-full bg-[#D49B54] text-[#120E0A] text-xs font-black flex items-center justify-center tabular-nums-fa">
@@ -410,11 +410,11 @@ export const CustomOrderStudio: React.FC<CustomOrderStudioProps> = ({
                     : 'bg-[#120E0A]/45 border-[#FFF0DC]/12 hover:border-[#FFF0DC]/25'
                 }`}
               >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#D49B54]/20 flex items-center justify-center text-[#D49B54]">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-10 h-10 rounded-xl bg-[#D49B54]/20 flex items-center justify-center text-[#D49B54] shrink-0">
                     <Gift className="w-5 h-5" />
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <div className="text-xs sm:text-sm font-bold text-[#F7F2EB]">
                       بسته‌بندی کادویی لوکس با پوشال چوب طبیعی و کارت اصالت موم‌مهر شده
                     </div>
@@ -432,7 +432,7 @@ export const CustomOrderStudio: React.FC<CustomOrderStudioProps> = ({
 
           {/* Left 5 Columns: Sticky Glassmorphic Live Preview & Instant Order Summary */}
           <div className="lg:col-span-5 lg:sticky lg:top-24">
-            <div className="glass-panel-elevated rounded-[28px] p-5 sm:p-6 space-y-5">
+            <div className="glass-panel-elevated rounded-[28px] p-4 sm:p-6 space-y-5">
               {/* Live Visual Preview Box */}
               <div className="relative rounded-2xl overflow-hidden aspect-[4/3] bg-[#16100B]">
                 <img
@@ -475,8 +475,8 @@ export const CustomOrderStudio: React.FC<CustomOrderStudioProps> = ({
 
               {/* Configured Specs Summary */}
               <div className="space-y-2.5 text-xs sm:text-sm border-b border-[#FFF0DC]/12 pb-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-[#C8B9A6]">جنس چوب انتخابی:</span>
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-[#C8B9A6] shrink-0">جنس چوب انتخابی:</span>
                   <span className="font-bold text-[#F7F2EB] flex items-center gap-1.5">
                     <span
                       className="w-3 h-3 rounded-full inline-block"
@@ -486,28 +486,28 @@ export const CustomOrderStudio: React.FC<CustomOrderStudioProps> = ({
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <span className="text-[#C8B9A6]">پوشش و پرداخت سطح:</span>
-                  <span className="font-bold text-[#F7F2EB]">{finish.name}</span>
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-[#C8B9A6] shrink-0">پوشش و پرداخت سطح:</span>
+                  <span className="font-bold text-[#F7F2EB] text-left leading-snug">{finish.name}</span>
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <span className="text-[#C8B9A6]">ابعاد ساخت:</span>
-                  <span className="font-bold text-[#F7F2EB]">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-[#C8B9A6] shrink-0">ابعاد ساخت:</span>
+                  <span className="font-bold text-[#F7F2EB] text-left leading-snug">
                     {size.id === 'custom' && customDimensionsText
                       ? customDimensionsText
                       : size.name}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <span className="text-[#C8B9A6]">حکاکی لیزری:</span>
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-[#C8B9A6] shrink-0">حکاکی لیزری:</span>
                   <span className="font-bold text-[#E5B26D] truncate max-w-[200px]">
                     {engravingText.trim() ? `«${engravingText}»` : 'بدون حکاکی'}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-3">
                   <span className="text-[#C8B9A6]">زمان آماده‌سازی در کارگاه:</span>
                   <span className="font-bold text-[#4E9F6E] flex items-center gap-1 tabular-nums-fa">
                     <Clock className="w-3.5 h-3.5" />
@@ -517,8 +517,8 @@ export const CustomOrderStudio: React.FC<CustomOrderStudioProps> = ({
               </div>
 
               {/* Quantity & Total Price */}
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-2 glass-pill rounded-xl p-1">
+              <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4">
+                <div className="flex items-center gap-2 glass-pill rounded-xl p-1 shrink-0">
                   <button
                     type="button"
                     onClick={() => setQuantity((q) => Math.max(1, q - 1))}

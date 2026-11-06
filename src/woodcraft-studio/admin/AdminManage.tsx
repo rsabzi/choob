@@ -121,7 +121,7 @@ const ProductsManager: React.FC<{
               <div className="text-[11px] text-[#8A7968] mt-1">
                 {p.categoryLabel} • {formatTomans(p.basePrice)} تومان
               </div>
-              <div className="flex items-center gap-1.5 mt-3">
+              <div className="flex items-center gap-1.5 mt-3 flex-wrap">
                 <button
                   type="button"
                   onClick={() => openEdit(p)}
@@ -141,7 +141,7 @@ const ProductsManager: React.FC<{
                   onClick={() => {
                     if (window.confirm(`محصول «${p.title}» حذف شود؟`)) onDelete(p.id);
                   }}
-                  className="w-7 h-7 rounded-lg bg-[#D9534F]/10 border border-[#D9534F]/30 flex items-center justify-center text-[#E87F7F] cursor-pointer"
+                  className="w-8 h-8 rounded-lg bg-[#D9534F]/10 border border-[#D9534F]/30 flex items-center justify-center text-[#E87F7F] cursor-pointer"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
@@ -375,8 +375,8 @@ const MaterialsManager: React.FC<{
               <span className="w-12 h-12 rounded-2xl border border-white/25 shrink-0" style={{ background: w.swatchGradient }} />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-sm font-extrabold text-[#F7F2EB]">{w.name}</span>
-                  <span className="text-[11px] px-2 py-0.5 rounded-full bg-[#D49B54]/15 text-[#E5B26D] font-bold">
+                  <span className="text-sm font-extrabold text-[#F7F2EB] min-w-0 truncate">{w.name}</span>
+                  <span className="text-[11px] px-2 py-0.5 rounded-full bg-[#D49B54]/15 text-[#E5B26D] font-bold shrink-0">
                     ضریب {toPersianDigits(Math.round(w.priceMultiplier * 100))}٪
                   </span>
                 </div>
@@ -388,7 +388,7 @@ const MaterialsManager: React.FC<{
                   <button
                     type="button"
                     onClick={() => window.confirm(`چوب «${w.name}» حذف شود؟`) && props.onDeleteWood(w.id)}
-                    className="w-7 h-7 rounded-lg bg-[#D9534F]/10 border border-[#D9534F]/30 flex items-center justify-center text-[#E87F7F] cursor-pointer"
+                    className="w-8 h-8 rounded-lg bg-[#D9534F]/10 border border-[#D9534F]/30 flex items-center justify-center text-[#E87F7F] cursor-pointer"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
@@ -430,7 +430,7 @@ const MaterialsManager: React.FC<{
                 <button
                   type="button"
                   onClick={() => window.confirm(`پوشش «${f.name}» حذف شود؟`) && props.onDeleteFinish(f.id)}
-                  className="w-7 h-7 rounded-lg bg-[#D9534F]/10 border border-[#D9534F]/30 flex items-center justify-center text-[#E87F7F] cursor-pointer"
+                  className="w-8 h-8 rounded-lg bg-[#D9534F]/10 border border-[#D9534F]/30 flex items-center justify-center text-[#E87F7F] cursor-pointer"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
@@ -476,7 +476,7 @@ const MaterialsManager: React.FC<{
                 <button
                   type="button"
                   onClick={() => window.confirm(`گزینه ابعاد «${s.name}» حذف شود؟`) && props.onDeleteSize(s.id)}
-                  className="w-7 h-7 rounded-lg bg-[#D9534F]/10 border border-[#D9534F]/30 flex items-center justify-center text-[#E87F7F] cursor-pointer"
+                  className="w-8 h-8 rounded-lg bg-[#D9534F]/10 border border-[#D9534F]/30 flex items-center justify-center text-[#E87F7F] cursor-pointer"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
@@ -562,7 +562,7 @@ const ServicesManager: React.FC<{
               <p className="text-[11px] text-[#8A7968] line-clamp-2 mt-0.5">{s.description}</p>
               <div className="flex gap-1.5 mt-2.5">
                 <button type="button" onClick={() => { setEditing({ ...s }); setFeaturesText(s.features.join('\n')); }} className="px-3 py-1.5 rounded-lg bg-[#D49B54]/15 border border-[#D49B54]/40 text-[#E5B26D] text-[11px] font-bold flex items-center gap-1 cursor-pointer"><Pencil className="w-3 h-3" /> ویرایش</button>
-                <button type="button" onClick={() => window.confirm(`خدمت «${s.title}» حذف شود؟`) && onDelete(s.id)} className="w-7 h-7 rounded-lg bg-[#D9534F]/10 border border-[#D9534F]/30 flex items-center justify-center text-[#E87F7F] cursor-pointer"><Trash2 className="w-3.5 h-3.5" /></button>
+                <button type="button" onClick={() => window.confirm(`خدمت «${s.title}» حذف شود؟`) && onDelete(s.id)} className="w-8 h-8 rounded-lg bg-[#D9534F]/10 border border-[#D9534F]/30 flex items-center justify-center text-[#E87F7F] cursor-pointer"><Trash2 className="w-3.5 h-3.5" /></button>
               </div>
             </div>
           </div>
@@ -619,7 +619,7 @@ const TestimonialsManager: React.FC<{
               <span className="text-[11px] text-[#C8B9A6]">{t.city} • {t.dateLabel}{!t.active && ' • مخفی'}</span>
               <div className="flex gap-1.5">
                 <button type="button" onClick={() => setEditing({ ...t })} className="px-3 py-1.5 rounded-lg bg-[#D49B54]/15 border border-[#D49B54]/40 text-[#E5B26D] text-[11px] font-bold flex items-center gap-1 cursor-pointer"><Pencil className="w-3 h-3" /> ویرایش</button>
-                <button type="button" onClick={() => window.confirm('این نظر حذف شود؟') && onDelete(t.id)} className="w-7 h-7 rounded-lg bg-[#D9534F]/10 border border-[#D9534F]/30 flex items-center justify-center text-[#E87F7F] cursor-pointer"><Trash2 className="w-3.5 h-3.5" /></button>
+                <button type="button" onClick={() => window.confirm('این نظر حذف شود؟') && onDelete(t.id)} className="w-8 h-8 rounded-lg bg-[#D9534F]/10 border border-[#D9534F]/30 flex items-center justify-center text-[#E87F7F] cursor-pointer"><Trash2 className="w-3.5 h-3.5" /></button>
               </div>
             </div>
           </div>
@@ -674,7 +674,7 @@ const FaqsManager: React.FC<{
             </div>
             <div className="flex gap-1.5 shrink-0">
               <button type="button" onClick={() => setEditing({ ...f })} className="px-3 py-1.5 rounded-lg bg-[#D49B54]/15 border border-[#D49B54]/40 text-[#E5B26D] text-[11px] font-bold flex items-center gap-1 cursor-pointer"><Pencil className="w-3 h-3" /> ویرایش</button>
-              <button type="button" onClick={() => window.confirm('این سوال حذف شود؟') && onDelete(f.id)} className="w-7 h-7 rounded-lg bg-[#D9534F]/10 border border-[#D9534F]/30 flex items-center justify-center text-[#E87F7F] cursor-pointer"><Trash2 className="w-3.5 h-3.5" /></button>
+              <button type="button" onClick={() => window.confirm('این سوال حذف شود؟') && onDelete(f.id)} className="w-8 h-8 rounded-lg bg-[#D9534F]/10 border border-[#D9534F]/30 flex items-center justify-center text-[#E87F7F] cursor-pointer"><Trash2 className="w-3.5 h-3.5" /></button>
             </div>
           </div>
         ))}
@@ -726,7 +726,7 @@ const CouponsManager: React.FC<{
             </div>
             <div className="flex gap-1.5 shrink-0">
               <button type="button" onClick={() => setEditing({ ...c })} className="px-3 py-1.5 rounded-lg bg-[#D49B54]/15 border border-[#D49B54]/40 text-[#E5B26D] text-[11px] font-bold flex items-center gap-1 cursor-pointer"><Pencil className="w-3 h-3" /> ویرایش</button>
-              <button type="button" onClick={() => window.confirm(`کد «${c.code}» حذف شود؟`) && onDelete(c.id)} className="w-7 h-7 rounded-lg bg-[#D9534F]/10 border border-[#D9534F]/30 flex items-center justify-center text-[#E87F7F] cursor-pointer"><Trash2 className="w-3.5 h-3.5" /></button>
+              <button type="button" onClick={() => window.confirm(`کد «${c.code}» حذف شود؟`) && onDelete(c.id)} className="w-8 h-8 rounded-lg bg-[#D9534F]/10 border border-[#D9534F]/30 flex items-center justify-center text-[#E87F7F] cursor-pointer"><Trash2 className="w-3.5 h-3.5" /></button>
             </div>
           </div>
         ))}

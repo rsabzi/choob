@@ -60,7 +60,7 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({
       onClick={onClose}
     >
       <div
-        className="glass-panel-elevated rounded-[26px] w-full max-w-lg max-h-[90vh] overflow-y-auto p-5 sm:p-7 animate-fadeIn"
+        className="glass-panel-elevated rounded-[26px] w-full max-w-lg max-h-[92vh] overflow-y-auto p-4 pb-safe sm:p-7 animate-fadeIn"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between pb-4 border-b border-[#FFF0DC]/15">
@@ -157,10 +157,10 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({
                 <span className="text-[#C8B9A6]">تاریخ ثبت:</span>
                 <span className="font-bold text-[#F7F2EB]">{formatDate(result.createdAt)}</span>
               </div>
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-[#C8B9A6]">وضعیت فعلی:</span>
+              <div className="flex items-center justify-between gap-3 text-xs">
+                <span className="text-[#C8B9A6] shrink-0">وضعیت فعلی:</span>
                 <span
-                  className="px-2.5 py-1 rounded-full font-bold"
+                  className="px-2.5 py-1 rounded-full font-bold text-center leading-relaxed"
                   style={{
                     color: orderStatusMeta(result.status).color,
                     background: orderStatusMeta(result.status).bg,
@@ -216,7 +216,7 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({
                         {item.engravingText ? ` • حکاکی: «${item.engravingText}»` : ''}
                       </div>
                     </div>
-                    <div className="text-xs font-black text-[#F7F2EB]">
+                    <div className="text-xs font-black text-[#F7F2EB] whitespace-nowrap shrink-0">
                       {formatTomans(item.unitPrice * item.quantity)} ت
                     </div>
                   </div>

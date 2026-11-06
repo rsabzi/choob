@@ -26,11 +26,11 @@ export const CraftsmanshipAndReviews: React.FC<{
       {/* Wood Species & Workshop Process Section */}
       <section
         id="woods"
-        className="relative py-20 px-4 sm:px-6 lg:px-8 scroll-mt-20"
+        className="relative py-16 sm:py-20 px-4 sm:px-6 lg:px-8 scroll-mt-20 overflow-x-clip"
       >
         <div className="max-w-[1360px] mx-auto space-y-16">
           {/* Interactive Wood Guide */}
-          <div className="glass-panel-elevated rounded-[30px] p-6 sm:p-10">
+          <div className="glass-panel-elevated rounded-[30px] p-4 sm:p-10">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
               <div className="lg:col-span-5 space-y-4">
                 <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full glass-pill text-xs font-bold text-[#D49B54]">
@@ -141,8 +141,8 @@ export const CraftsmanshipAndReviews: React.FC<{
           </div>
 
           {/* 3-Step Artisanal Process Strip */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="glass-panel rounded-[22px] p-6 flex items-start gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="glass-panel rounded-[22px] p-5 sm:p-6 flex items-start gap-4">
               <div className="w-12 h-12 rounded-2xl bg-[#D49B54]/15 border border-[#D49B54]/35 flex items-center justify-center text-[#D49B54] shrink-0">
                 <Compass className="w-6 h-6" />
               </div>
@@ -202,7 +202,7 @@ export const CraftsmanshipAndReviews: React.FC<{
       {/* Customer Reviews & Social Proof Section */}
       <section
         id="reviews"
-        className="relative py-16 md:py-20 px-4 sm:px-6 lg:px-8 scroll-mt-20"
+        className="relative py-14 sm:py-16 md:py-20 px-4 sm:px-6 lg:px-8 scroll-mt-20 overflow-x-clip"
       >
         <div className="max-w-[1360px] mx-auto">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
@@ -228,11 +228,11 @@ export const CraftsmanshipAndReviews: React.FC<{
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {testimonials.map((rev) => (
               <div
                 key={rev.id}
-                className="glass-card-interactive rounded-[24px] p-6 flex flex-col justify-between"
+                className="glass-card-interactive rounded-[24px] p-5 sm:p-6 flex flex-col justify-between min-w-0"
               >
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-4">

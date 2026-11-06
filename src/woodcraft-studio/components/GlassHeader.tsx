@@ -53,7 +53,7 @@ export const GlassHeader: React.FC<GlassHeaderProps> = ({
         >
           <div className="flex items-center justify-between gap-3">
             {/* Studio Brand Emblem */}
-            <a href="#" className="flex items-center gap-3 group focus:outline-none">
+            <a href="#" className="flex items-center gap-2.5 sm:gap-3 group focus:outline-none min-w-0">
               <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#E5B26D] via-[#B86B35] to-[#4A2F1D] p-[1.5px] shadow-lg shadow-[#D49B54]/20 shrink-0">
                 <div className="w-full h-full rounded-full bg-[#16100B] flex items-center justify-center group-hover:bg-[#1E150E] transition-colors">
                   <TreePine className="w-5 h-5 text-[#D49B54] group-hover:scale-110 transition-transform" />
@@ -61,7 +61,7 @@ export const GlassHeader: React.FC<GlassHeaderProps> = ({
               </div>
               <div className="flex flex-col min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="text-base sm:text-lg font-extrabold tracking-tight text-[#F7F2EB] truncate">
+                  <span className="text-[15px] sm:text-lg font-extrabold tracking-tight text-[#F7F2EB] truncate max-w-[128px] min-[420px]:max-w-[190px] sm:max-w-none">
                     {brandName}
                   </span>
                   <span className="hidden xl:inline-flex items-center px-2 py-0.5 text-[10px] font-semibold rounded-full bg-[#D49B54]/15 text-[#D49B54] border border-[#D49B54]/30 shrink-0">
@@ -136,7 +136,7 @@ export const GlassHeader: React.FC<GlassHeaderProps> = ({
 
           {/* Mobile Menu */}
           {mobileOpen && (
-            <div className="lg:hidden mt-3 pt-3 border-t border-[#FFF0DC]/10 grid grid-cols-2 gap-2">
+            <div className="lg:hidden mt-3 pt-3 border-t border-[#FFF0DC]/10 grid grid-cols-1 min-[420px]:grid-cols-2 gap-2">
               {NAV_LINKS.map((link) => (
                 <a
                   key={link.href}

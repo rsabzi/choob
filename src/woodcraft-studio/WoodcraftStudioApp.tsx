@@ -118,7 +118,7 @@ export const WoodcraftStudioApp: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#120E0A] text-[#F7F2EB] wood-grain-pattern relative selection:bg-[#D49B54]/30">
+    <div className="min-h-screen bg-[#120E0A] text-[#F7F2EB] wood-grain-pattern relative selection:bg-[#D49B54]/30 overflow-x-clip">
       <GlassHeader
         brandName={settings.brandName}
         brandTagline={settings.brandTagline}
@@ -235,7 +235,7 @@ export const WoodcraftStudioApp: React.FC = () => {
       />
 
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 left-6 sm:left-auto z-50 glass-panel-elevated rounded-2xl px-4 py-3.5 flex items-center gap-3 shadow-2xl border border-[#D49B54] max-w-sm animate-fadeIn">
+        <div className="fixed bottom-safe right-4 left-4 sm:right-6 sm:left-auto z-50 glass-panel-elevated rounded-2xl px-4 py-3.5 flex items-center gap-3 shadow-2xl border border-[#D49B54] max-w-sm animate-fadeIn">
           <CheckCircle2 className="w-5 h-5 text-[#4E9F6E] shrink-0" />
           <span className="text-xs sm:text-sm font-bold text-[#F7F2EB] flex-1">{toastMessage}</span>
           <button

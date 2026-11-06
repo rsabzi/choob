@@ -31,7 +31,7 @@ export const GlassFooter: React.FC<GlassFooterProps> = ({
     <footer className="relative pt-10 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
       <div className="max-w-[1360px] mx-auto space-y-12">
         {/* Bespoke Idea Callout Banner */}
-        <div className="glass-panel-elevated rounded-[30px] p-6 sm:p-10 relative overflow-hidden">
+        <div className="glass-panel-elevated rounded-[30px] p-5 sm:p-10 relative overflow-hidden">
           <div className="pointer-events-none absolute -left-16 -bottom-16 w-72 h-72 rounded-full bg-[#D49B54]/20 blur-[90px]" />
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
@@ -72,7 +72,7 @@ export const GlassFooter: React.FC<GlassFooterProps> = ({
         </div>
 
         {/* Main Footer Grid */}
-        <div className="glass-panel rounded-[26px] p-6 sm:p-10">
+        <div className="glass-panel rounded-[26px] p-4 sm:p-10">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 pb-8 border-b border-[#FFF0DC]/10">
             {/* Studio Bio */}
             <div className="md:col-span-5 space-y-4">

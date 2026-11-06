@@ -176,7 +176,7 @@ export const AdminOrders: React.FC<AdminOrdersProps> = ({
       </div>
 
       {/* Orders Table */}
-      <div className="glass-panel rounded-2xl overflow-hidden">
+      <div className="glass-panel rounded-2xl overflow-hidden max-w-full">
         <div className="overflow-x-auto">
           <table className="w-full text-xs sm:text-sm min-w-[820px]">
             <thead>
@@ -302,11 +302,11 @@ export const AdminOrders: React.FC<AdminOrdersProps> = ({
             <div className="space-y-4">
               <div className="glass-panel rounded-2xl p-4 space-y-2 text-xs">
                 <h4 className="text-sm font-extrabold text-[#F7F2EB]">مشخصات مشتری</h4>
-                <div className="flex justify-between"><span className="text-[#8A7968]">نام:</span><span className="font-bold text-[#F7F2EB]">{selected.customer.fullName}</span></div>
-                <div className="flex justify-between"><span className="text-[#8A7968]">موبایل:</span><span className="font-bold text-[#F7F2EB]" dir="ltr">{selected.customer.phone}</span></div>
-                <div className="flex justify-between"><span className="text-[#8A7968]">شهر:</span><span className="font-bold text-[#F7F2EB]">{selected.customer.city || '—'}</span></div>
+                <div className="flex justify-between gap-3"><span className="text-[#8A7968] shrink-0">نام:</span><span className="font-bold text-[#F7F2EB]">{selected.customer.fullName}</span></div>
+                <div className="flex justify-between gap-3"><span className="text-[#8A7968] shrink-0">موبایل:</span><span className="font-bold text-[#F7F2EB]" dir="ltr">{selected.customer.phone}</span></div>
+                <div className="flex justify-between gap-3"><span className="text-[#8A7968] shrink-0">شهر:</span><span className="font-bold text-[#F7F2EB]">{selected.customer.city || '—'}</span></div>
                 <div className="flex justify-between gap-4"><span className="text-[#8A7968] shrink-0">نشانی:</span><span className="font-bold text-[#F7F2EB] text-left">{selected.customer.address || '—'}</span></div>
-                <div className="flex justify-between"><span className="text-[#8A7968]">کانال ارسال عکس چوب:</span><span className="font-bold text-[#F7F2EB]">{selected.customer.contactChannel === 'whatsapp' ? 'واتساپ' : selected.customer.contactChannel === 'telegram' ? 'تلگرام' : 'تماس تلفنی'}</span></div>
+                <div className="flex justify-between gap-3"><span className="text-[#8A7968] shrink-0">کانال ارسال عکس چوب:</span><span className="font-bold text-[#F7F2EB]">{selected.customer.contactChannel === 'whatsapp' ? 'واتساپ' : selected.customer.contactChannel === 'telegram' ? 'تلگرام' : 'تماس تلفنی'}</span></div>
                 {selected.customer.note && (
                   <div className="pt-2 border-t border-white/10">
                     <span className="text-[#8A7968] block mb-1">توضیحات مشتری:</span>
@@ -404,9 +404,9 @@ export const AdminOrders: React.FC<AdminOrdersProps> = ({
                         {item.engravingText && <div className="text-[#D49B54]">حکاکی: «{item.engravingText}»</div>}
                         {item.giftPackaging && <div className="text-[#4E9F6E]">+ بسته‌بندی کادویی</div>}
                       </div>
-                      <div className="text-left text-[11px]">
+                      <div className="text-left text-[11px] shrink-0">
                         <div className="text-[#8A7968]">× {toPersianDigits(item.quantity)}</div>
-                        <div className="font-black text-[#F7F2EB]">{formatTomans(item.unitPrice * item.quantity)} ت</div>
+                        <div className="font-black text-[#F7F2EB] whitespace-nowrap">{formatTomans(item.unitPrice * item.quantity)} ت</div>
                       </div>
                     </div>
                   ))}

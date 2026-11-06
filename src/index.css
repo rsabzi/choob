@@ -30,6 +30,19 @@
     color: #F7F2EB;
     line-height: 1.75;
     overflow-x: hidden;
+    overflow-x: clip;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Prevent any stray wide element from creating horizontal scroll on small screens */
+  #root {
+    min-width: 0;
+    overflow-x: clip;
+  }
+
+  /* Flex/grid children must be allowed to shrink instead of overflowing */
+  .min-w-0 {
+    min-width: 0;
   }
 }
 
@@ -217,4 +230,19 @@ input[type='number']::-webkit-inner-spin-button {
 input[type='number'] {
   -moz-appearance: textfield;
   appearance: textfield;
+}
+
+/* Safe-area aware bottom padding (notched phones) */
+.pb-safe {
+  padding-bottom: max(1.25rem, env(safe-area-inset-bottom));
+}
+.bottom-safe {
+  bottom: max(1.5rem, env(safe-area-inset-bottom));
+}
+
+/* Slightly tighter display type on very small phones */
+@media (max-width: 380px) {
+  html {
+    font-size: 15px;
+  }
 }

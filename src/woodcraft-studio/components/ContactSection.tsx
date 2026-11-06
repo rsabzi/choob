@@ -60,7 +60,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
   };
 
   return (
-    <section id="contact" className="relative py-20 px-4 sm:px-6 lg:px-8 scroll-mt-24">
+    <section id="contact" className="relative py-16 sm:py-20 px-4 sm:px-6 lg:px-8 scroll-mt-24 overflow-x-clip">
       <div className="pointer-events-none absolute bottom-0 right-1/4 w-[420px] h-[300px] rounded-full bg-[#D49B54]/8 blur-[130px]" />
       <div className="max-w-[1100px] mx-auto">
         <div className="text-center max-w-3xl mx-auto mb-10">
@@ -124,7 +124,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
           </div>
 
           {/* Contact Form */}
-          <div className="lg:col-span-3 glass-panel-elevated rounded-[24px] p-5 sm:p-7">
+          <div className="lg:col-span-3 glass-panel-elevated rounded-[24px] p-4 sm:p-7 min-w-0">
             {sent ? (
               <div className="text-center py-8 space-y-4">
                 <div className="w-16 h-16 rounded-full bg-[#4E9F6E]/20 border-2 border-[#4E9F6E] flex items-center justify-center mx-auto text-[#4E9F6E]">
