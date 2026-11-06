@@ -1,0 +1,188 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-espresso: #120E0A;
+    --bg-walnut: #1C1510;
+    --text-cream: #F7F2EB;
+    --text-sand: #C8B9A6;
+    --text-umber: #8A7968;
+    --accent-amber: #D49B54;
+    --accent-terracotta: #B86B35;
+  }
+
+  * {
+    box-sizing: border-box;
+    border-color: rgba(255, 240, 220, 0.12);
+  }
+
+  html {
+    font-family: 'Vazirmatn', system-ui, -apple-system, sans-serif;
+    direction: rtl;
+    background-color: #120E0A;
+    color: #F7F2EB;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: 'Vazirmatn', system-ui, -apple-system, sans-serif;
+    background-color: #120E0A;
+    color: #F7F2EB;
+    line-height: 1.75;
+    overflow-x: hidden;
+  }
+}
+
+.font-lalezar {
+  font-family: 'Lalezar', 'Vazirmatn', sans-serif;
+}
+
+.tabular-nums-fa {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* Warm Smoked Glassmorphic Panels */
+.glass-panel {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 246, 232, 0.085) 0%,
+    rgba(38, 28, 20, 0.58) 55%,
+    rgba(24, 17, 12, 0.72) 100%
+  );
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid rgba(255, 240, 220, 0.14);
+  box-shadow:
+    0 24px 48px -12px rgba(8, 5, 3, 0.68),
+    inset 0 1px 0 0 rgba(255, 245, 230, 0.22),
+    inset 0 0 24px 0 rgba(212, 155, 84, 0.04);
+}
+
+.glass-panel-elevated {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 244, 229, 0.13) 0%,
+    rgba(45, 32, 22, 0.68) 50%,
+    rgba(22, 15, 10, 0.82) 100%
+  );
+  backdrop-filter: blur(26px) saturate(175%);
+  -webkit-backdrop-filter: blur(26px) saturate(175%);
+  border: 1px solid rgba(212, 155, 84, 0.28);
+  box-shadow:
+    0 28px 60px -12px rgba(6, 4, 2, 0.78),
+    inset 0 1px 0 0 rgba(255, 246, 232, 0.3),
+    0 0 35px -10px rgba(212, 155, 84, 0.18);
+}
+
+.glass-card-interactive {
+  background: linear-gradient(
+    155deg,
+    rgba(255, 245, 230, 0.075) 0%,
+    rgba(32, 23, 16, 0.64) 60%,
+    rgba(20, 14, 10, 0.78) 100%
+  );
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid rgba(255, 240, 220, 0.13);
+  box-shadow:
+    0 20px 42px -12px rgba(8, 5, 3, 0.62),
+    inset 0 1px 0 0 rgba(255, 245, 230, 0.18);
+  transition:
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.35s ease,
+    box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.glass-card-interactive:hover {
+  transform: translateY(-6px);
+  border-color: rgba(212, 155, 84, 0.45);
+  box-shadow:
+    0 30px 58px -12px rgba(5, 3, 2, 0.82),
+    inset 0 1px 0 0 rgba(255, 245, 230, 0.32),
+    0 0 32px -6px rgba(212, 155, 84, 0.22);
+}
+
+.glass-pill {
+  background: rgba(255, 244, 229, 0.07);
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  border: 1px solid rgba(255, 240, 220, 0.15);
+  box-shadow: inset 0 1px 0 0 rgba(255, 245, 230, 0.16);
+}
+
+.glass-input {
+  background: rgba(18, 14, 10, 0.55);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 240, 220, 0.15);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.45);
+  transition: all 0.25s ease;
+}
+
+.glass-input:focus {
+  outline: none;
+  border-color: #D49B54;
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, 0.45),
+    0 0 0 3px rgba(212, 155, 84, 0.2);
+}
+
+/* Liquid Honey Gold Gradient CTA */
+.btn-honey-gold {
+  background: linear-gradient(135deg, #E5B26D 0%, #D49B54 48%, #B86B35 100%);
+  color: #120E0A;
+  font-weight: 700;
+  box-shadow:
+    0 12px 28px -6px rgba(212, 155, 84, 0.42),
+    inset 0 1px 0 0 rgba(255, 252, 245, 0.55);
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.btn-honey-gold:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 18px 34px -6px rgba(212, 155, 84, 0.58),
+    inset 0 1px 0 0 rgba(255, 252, 245, 0.7);
+  filter: brightness(1.05);
+}
+
+.btn-honey-gold:active {
+  transform: translateY(0);
+}
+
+/* Subtle Wood Grain Noise Background */
+.wood-grain-pattern {
+  background-image: radial-gradient(rgba(212, 155, 84, 0.08) 1px, transparent 0);
+  background-size: 28px 28px;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #120E0A;
+}
+::-webkit-scrollbar-thumb {
+  background: #35271C;
+  border-radius: 9999px;
+  border: 1px solid rgba(212, 155, 84, 0.2);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #D49B54;
+}
+
+@keyframes floatSlow {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.animate-float-slow {
+  animation: floatSlow 6s ease-in-out infinite;
+}
