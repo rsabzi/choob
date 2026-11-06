@@ -8,22 +8,29 @@ import {
   Send,
   ShieldCheck,
   Gift,
+  Mail,
+  PackageSearch,
+  Lock,
 } from 'lucide-react';
-import { toPersianDigits } from '../data/products';
+import type { SiteSettings } from '../store/types';
 
 interface GlassFooterProps {
-  onOpenCustomOrderDrawer: () => void;
+  settings: SiteSettings;
+  onOpenCustomProject: () => void;
   onJumpToCustomizer: () => void;
+  onOpenTracking: () => void;
 }
 
 export const GlassFooter: React.FC<GlassFooterProps> = ({
-  onOpenCustomOrderDrawer,
+  settings,
+  onOpenCustomProject,
   onJumpToCustomizer,
+  onOpenTracking,
 }) => {
   return (
     <footer className="relative pt-10 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
       <div className="max-w-[1360px] mx-auto space-y-12">
-        {/* Bespoke Idea & Corporate Gift Callout Banner */}
+        {/* Bespoke Idea Callout Banner */}
         <div className="glass-panel-elevated rounded-[30px] p-6 sm:p-10 relative overflow-hidden">
           <div className="pointer-events-none absolute -left-16 -bottom-16 w-72 h-72 rounded-full bg-[#D49B54]/20 blur-[90px]" />
 
@@ -37,15 +44,16 @@ export const GlassFooter: React.FC<GlassFooterProps> = ({
                 طرح خاصی در ذهن دارید یا عکس یک اکسسوری چوبی را در پینترست دیده‌اید؟
               </h3>
               <p className="text-xs sm:text-base text-[#C8B9A6] leading-relaxed max-w-2xl">
-                کافیست ابعاد یا تصویر مورد نظرتان را در فرم سفارش ثبت کنید؛ استادکاران ما همان طرح
-                را با چوب گردو یا زیتون طبیعی و حکاکی اختصاصی برای شما می‌سازند.
+                کافیست ایده، ابعاد یا تصویر مورد نظرتان را در فرم سفارش طرح دلخواه ثبت کنید؛
+                استادکاران ما همان طرح را با چوب طبیعی و حکاکی اختصاصی برای شما می‌سازند و
+                سفارش مستقیم به دست مدیریت کارگاه می‌رسد.
               </p>
             </div>
 
             <div className="lg:col-span-4 flex flex-col sm:flex-row lg:flex-col gap-3 justify-end">
               <button
                 type="button"
-                onClick={onOpenCustomOrderDrawer}
+                onClick={onOpenCustomProject}
                 className="btn-honey-gold px-6 py-4 rounded-2xl text-sm font-black flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Sparkles className="w-4 h-4" />
@@ -66,7 +74,7 @@ export const GlassFooter: React.FC<GlassFooterProps> = ({
         {/* Main Footer Grid */}
         <div className="glass-panel rounded-[26px] p-6 sm:p-10">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 pb-8 border-b border-[#FFF0DC]/10">
-            {/* Col 1: Studio Bio */}
+            {/* Studio Bio */}
             <div className="md:col-span-5 space-y-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#E5B26D] to-[#6E4522] flex items-center justify-center text-[#120E0A]">
@@ -74,7 +82,7 @@ export const GlassFooter: React.FC<GlassFooterProps> = ({
                 </div>
                 <div>
                   <span className="text-lg font-black text-[#F7F2EB] block">
-                    استودیو چوب و هنر اُرسی
+                    {settings.brandName}
                   </span>
                   <span className="text-xs text-[#D49B54]">
                     اصالت نجاری سنتی در قالبی مدرن و مینیمال
@@ -82,51 +90,32 @@ export const GlassFooter: React.FC<GlassFooterProps> = ({
                 </div>
               </div>
               <p className="text-xs sm:text-sm text-[#C8B9A6] leading-relaxed">
-                ما در آتلیه اُرسی با ترکیب چوب‌های اصیل گردو، بلوط، راش و زیتون با یراق‌آلات
-                برنجی دست‌ساز، اشیایی می‌سازیم که هر روز روی میز کار یا دیوار خانه‌تان از تماشا
-                و لمس آن‌ها لذت ببرید.
+                {settings.aboutText}
               </p>
               <div className="flex items-center gap-2 text-xs text-[#4E9F6E] font-semibold">
                 <ShieldCheck className="w-4 h-4" />
-                <span>ضمانت ۵ ساله سلامت چوب و موتور ساعت‌های دیواری</span>
+                <span>ضمانت سلامت چوب و موتور ساعت‌های دیواری</span>
               </div>
             </div>
 
-            {/* Col 2: Quick Categories */}
+            {/* Quick Links */}
             <div className="md:col-span-3 space-y-3">
-              <h4 className="text-sm font-extrabold text-[#F7F2EB]">
-                محبوب‌ترین دست‌سازه‌ها
-              </h4>
+              <h4 className="text-sm font-extrabold text-[#F7F2EB]">دسترسی سریع</h4>
               <ul className="space-y-2 text-xs sm:text-sm text-[#C8B9A6]">
+                <li><a href="#portfolio" className="hover:text-[#E5B26D] transition-colors">• ویترین نمونه‌کارها</a></li>
+                <li><a href="#services" className="hover:text-[#E5B26D] transition-colors">• خدمات کارگاه</a></li>
+                <li><a href="#customizer" className="hover:text-[#E5B26D] transition-colors">• شخصی‌سازی و حکاکی آنلاین</a></li>
+                <li><a href="#custom-project" className="hover:text-[#E5B26D] transition-colors">• سفارش طرح دلخواه از روی عکس</a></li>
+                <li><a href="#faq" className="hover:text-[#E5B26D] transition-colors">• سوالات متداول</a></li>
                 <li>
-                  <a href="#portfolio" className="hover:text-[#E5B26D] transition-colors">
-                    • ساعت دیواری چوب گردو و برنج
-                  </a>
-                </li>
-                <li>
-                  <a href="#portfolio" className="hover:text-[#E5B26D] transition-colors">
-                    • استند لپ‌تاپ ارگونومیک چوب بلوط
-                  </a>
-                </li>
-                <li>
-                  <a href="#portfolio" className="hover:text-[#E5B26D] transition-colors">
-                    • داک شارژ گوشی و ساعت هوشمند
-                  </a>
-                </li>
-                <li>
-                  <a href="#portfolio" className="hover:text-[#E5B26D] transition-colors">
-                    • جاکلیدی دیواری مغناطیسی نوا
-                  </a>
-                </li>
-                <li>
-                  <a href="#customizer" className="hover:text-[#E5B26D] transition-colors">
-                    • ست رومیزی مدیریتی با حکاکی لیزری
-                  </a>
+                  <button type="button" onClick={onOpenTracking} className="hover:text-[#E5B26D] transition-colors cursor-pointer inline-flex items-center gap-1.5">
+                    <PackageSearch className="w-3.5 h-3.5" /> پیگیری سفارش با کد رهگیری
+                  </button>
                 </li>
               </ul>
             </div>
 
-            {/* Col 3: Contact & Workshop Info */}
+            {/* Contact Info (from admin settings) */}
             <div className="md:col-span-4 space-y-3">
               <h4 className="text-sm font-extrabold text-[#F7F2EB]">
                 ارتباط مستقیم با کارگاه نجاری
@@ -134,33 +123,38 @@ export const GlassFooter: React.FC<GlassFooterProps> = ({
               <div className="space-y-2.5 text-xs sm:text-sm text-[#C8B9A6]">
                 <div className="flex items-center gap-2.5">
                   <PhoneCall className="w-4 h-4 text-[#D49B54] shrink-0" />
-                  <span className="tabular-nums-fa">
-                    تلفن و واتساپ مشاوره: {toPersianDigits('0912-480-9210')}
-                  </span>
+                  <span>تلفن و واتساپ مشاوره: {settings.phoneDisplay}</span>
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <Send className="w-4 h-4 text-[#D49B54] shrink-0" />
+                  <span>تلگرام: <span dir="ltr">@{settings.telegramId}</span> • اینستاگرام: <span dir="ltr">@{settings.instagramId}</span></span>
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <Mail className="w-4 h-4 text-[#D49B54] shrink-0" />
+                  <span dir="ltr" className="text-right">{settings.email}</span>
                 </div>
                 <div className="flex items-start gap-2.5">
                   <MapPin className="w-4 h-4 text-[#D49B54] shrink-0 mt-1" />
-                  <span>
-                    تهران، شهرک صنعتی چهارصددستگاه (بازدید حضوری از اسلب‌ها با هماهنگی قبلی)
-                  </span>
+                  <span>{settings.address}</span>
                 </div>
                 <div className="flex items-center gap-2.5">
                   <Clock className="w-4 h-4 text-[#D49B54] shrink-0" />
-                  <span className="tabular-nums-fa">
-                    پاسخگویی: شنبه تا پنج‌شنبه ساعت {toPersianDigits(9)} تا {toPersianDigits(21)}
-                  </span>
+                  <span>پاسخگویی: {settings.workingHours}</span>
                 </div>
               </div>
             </div>
           </div>
 
           <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#8A7968]">
-            <span>
-              © {toPersianDigits(1404)} تمامی حقوق برای استودیو چوب و هنر اُرسی محفوظ است.
-            </span>
-            <span>
-              ساخته‌شده با عشق به چوب طبیعی و هنر دست نجاران ایرانی
-            </span>
+            <span>© تمامی حقوق برای {settings.brandName} محفوظ است.</span>
+            <span>{settings.footerNote}</span>
+            <a
+              href="#/admin"
+              className="inline-flex items-center gap-1.5 hover:text-[#E5B26D] transition-colors"
+            >
+              <Lock className="w-3.5 h-3.5" />
+              ورود مدیریت کارگاه
+            </a>
           </div>
         </div>
       </div>

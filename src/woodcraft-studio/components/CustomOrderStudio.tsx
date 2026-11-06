@@ -11,20 +11,23 @@ import {
 } from 'lucide-react';
 import {
   WoodProduct,
-  WOOD_SPECIES,
+  WoodSpecies,
   WoodSpeciesId,
-  FINISH_OPTIONS,
   FinishOption,
-  SIZE_OPTIONS,
   SizeOption,
   OrderCartItem,
   formatTomans,
   toPersianDigits,
+  woodById,
 } from '../data/products';
 import { LiveWoodenClockSVG, WoodEngravingPreview } from './ArtisanVisuals';
 
 interface CustomOrderStudioProps {
   products: WoodProduct[];
+  woods: WoodSpecies[];
+  finishes: FinishOption[];
+  sizes: SizeOption[];
+  giftBoxPrice: number;
   selectedProduct: WoodProduct;
   onSelectProduct: (product: WoodProduct) => void;
   onAddConfiguredOrder: (item: OrderCartItem, openDrawerImmediately: boolean) => void;
@@ -32,13 +35,25 @@ interface CustomOrderStudioProps {
 
 export const CustomOrderStudio: React.FC<CustomOrderStudioProps> = ({
   products,
+  woods,
+  finishes,
+  sizes,
+  giftBoxPrice,
   selectedProduct,
   onSelectProduct,
   onAddConfiguredOrder,
 }) => {
   const [woodId, setWoodId] = useState<WoodSpeciesId>(selectedProduct.defaultWood);
-  const [finish, setFinish] = useState<FinishOption>(FINISH_OPTIONS[0]);
-  const [size, setSize] = useState<SizeOption>(SIZE_OPTIONS[0]);
+  const [finish, setFinish] = useState<FinishOption>(finishes[0]);
+  const [size, setSize] = useState<SizeOption>(sizes[0]);
+
+  // Keep selected finish/size valid if admin edits the material lists
+  useEffect(() => {
+    if (!finishes.some((f) => f.id === finish.id) && finishes[0]) setFinish(finishes[0]);
+  }, [finishes, finish.id]);
+  useEffect(() => {
+    if (!sizes.some((sz) => sz.id === size.id) && sizes[0]) setSize(sizes[0]);
+  }, [sizes, size.id]);
   const [customDimensionsText, setCustomDimensionsText] = useState('');
   const [engravingText, setEngravingText] = useState('به یادگار برای روزهای روشن');
   const [engravingFont, setEngravingFont] = useState<'nastaaliq' | 'modern' | 'minimal-latin'>('nastaaliq');
@@ -50,8 +65,7 @@ export const CustomOrderStudio: React.FC<CustomOrderStudioProps> = ({
     setWoodId(selectedProduct.defaultWood);
   }, [selectedProduct]);
 
-  const activeWood = WOOD_SPECIES[woodId];
-  const giftBoxPrice = 240000;
+  const activeWood = woodById(woods, woodId);
 
   // Dynamic Price Calculation
   const woodAdjustedBase = Math.round(
@@ -179,14 +193,13 @@ export const CustomOrderStudio: React.FC<CustomOrderStudioProps> = ({
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                {(Object.keys(WOOD_SPECIES) as WoodSpeciesId[]).map((key) => {
-                  const wood = WOOD_SPECIES[key];
-                  const isSelected = woodId === key;
+                {woods.map((wood) => {
+                  const isSelected = woodId === wood.id;
                   return (
                     <button
-                      key={key}
+                      key={wood.id}
                       type="button"
-                      onClick={() => setWoodId(key)}
+                      onClick={() => setWoodId(wood.id)}
                       className={`p-4 rounded-2xl text-right transition-all cursor-pointer border flex items-start gap-3.5 ${
                         isSelected
                           ? 'bg-[#FFF4E5]/14 border-[#D49B54] shadow-lg shadow-[#D49B54]/10'
@@ -233,7 +246,7 @@ export const CustomOrderStudio: React.FC<CustomOrderStudioProps> = ({
                 </h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  {FINISH_OPTIONS.map((opt) => {
+                  {finishes.map((opt) => {
                     const active = finish.id === opt.id;
                     return (
                       <button
@@ -280,7 +293,7 @@ export const CustomOrderStudio: React.FC<CustomOrderStudioProps> = ({
                 </label>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  {SIZE_OPTIONS.map((sz) => {
+                  {sizes.map((sz) => {
                     const active = size.id === sz.id;
                     return (
                       <button

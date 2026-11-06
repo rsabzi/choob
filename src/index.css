@@ -186,3 +186,35 @@
 .animate-float-slow {
   animation: floatSlow 6s ease-in-out infinite;
 }
+
+/* Utilities added for storefront/admin completeness */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px) scale(.995); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.animate-fadeIn {
+  animation: fadeIn .35s cubic-bezier(.22,1,.36,1) both;
+}
+
+select.glass-input option {
+  background-color: #1C1510;
+  color: #F7F2EB;
+}
+
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type='number'] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}

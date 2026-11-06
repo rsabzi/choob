@@ -12,14 +12,16 @@ import {
 } from 'lucide-react';
 import {
   WoodProduct,
-  WOOD_SPECIES,
+  WoodSpecies,
   WoodSpeciesId,
   formatTomans,
   toPersianDigits,
+  woodById,
 } from '../data/products';
 
 interface ProductDetailModalProps {
   product: WoodProduct | null;
+  woods: WoodSpecies[];
   onClose: () => void;
   onLoadIntoCustomizer: (product: WoodProduct) => void;
   onDirectAddToOrder: (product: WoodProduct, chosenWood: WoodSpeciesId) => void;
@@ -27,6 +29,7 @@ interface ProductDetailModalProps {
 
 export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
   product,
+  woods,
   onClose,
   onLoadIntoCustomizer,
   onDirectAddToOrder,
@@ -41,7 +44,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
 
   if (!product) return null;
 
-  const woodObj = WOOD_SPECIES[selectedWood];
+  const woodObj = woodById(woods, selectedWood);
   const calculatedPrice =
     Math.round((product.basePrice * woodObj.priceMultiplier) / 10000) * 10000;
 
@@ -146,7 +149,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
               </label>
               <div className="grid grid-cols-2 gap-2">
                 {product.availableWoods.map((wId) => {
-                  const w = WOOD_SPECIES[wId];
+                  const w = woodById(woods, wId);
                   const active = selectedWood === wId;
                   return (
                     <button
