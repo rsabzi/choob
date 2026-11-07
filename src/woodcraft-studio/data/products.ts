@@ -6,7 +6,7 @@ export type ProductCategory =
   | 'key-holder'
   | 'desk-accessories';
 
-export type WoodSpeciesId = 'walnut' | 'oak' | 'beech' | 'olive';
+export type WoodSpeciesId = string;
 
 export interface WoodSpecies {
   id: WoodSpeciesId;
@@ -22,7 +22,7 @@ export interface WoodSpecies {
 }
 
 export interface FinishOption {
-  id: 'matte-oil' | 'beeswax' | 'brass-inlay';
+  id: string;
   name: string;
   description: string;
   extraCost: number;
@@ -30,7 +30,7 @@ export interface FinishOption {
 }
 
 export interface SizeOption {
-  id: 'standard' | 'executive' | 'custom';
+  id: string;
   name: string;
   dimensionsLabel: string;
   priceDelta: number;
@@ -52,6 +52,7 @@ export interface WoodProduct {
   image: string;
   badge?: string;
   isBestseller?: boolean;
+  isActive?: boolean;
   story: string;
   highlights: string[];
   careGuide: string;
@@ -380,6 +381,30 @@ export const PRODUCTS: WoodProduct[] = [
 export function toPersianDigits(input: number | string): string {
   const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
   return String(input).replace(/\d/g, (d) => persianDigits[Number(d)]);
+}
+
+export function toEnglishDigits(input: string): string {
+  const fa = '۰۱۲۳۴۵۶۷۸۹';
+  const ar = '٠١٢٣٤٥٦٧٨٩';
+  return String(input)
+    .replace(/[۰-۹]/g, (d) => String(fa.indexOf(d)))
+    .replace(/[٠-٩]/g, (d) => String(ar.indexOf(d)));
+}
+
+export function woodById(woods: WoodSpecies[], id: WoodSpeciesId): WoodSpecies {
+  return woods.find((w) => w.id === id) ?? woods[0];
+}
+
+export function normalizeIranPhone(raw: string): string | null {
+  let digits = toEnglishDigits(raw).replace(/[\s-]/g, '');
+  if (digits.startsWith('+98')) digits = `0${digits.slice(3)}`;
+  if (digits.startsWith('98') && digits.length === 12) digits = `0${digits.slice(2)}`;
+  return /^09\d{9}$/.test(digits) ? digits : null;
+}
+
+export function toIntlPhone(localPhone: string): string {
+  const normalized = normalizeIranPhone(localPhone) ?? localPhone;
+  return normalized.startsWith('0') ? `98${normalized.slice(1)}` : normalized;
 }
 
 export function formatTomans(amount: number): string {

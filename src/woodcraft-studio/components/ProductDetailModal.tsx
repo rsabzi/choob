@@ -12,14 +12,16 @@ import {
 } from 'lucide-react';
 import {
   WoodProduct,
-  WOOD_SPECIES,
+  WoodSpecies,
   WoodSpeciesId,
   formatTomans,
   toPersianDigits,
+  woodById,
 } from '../data/products';
 
 interface ProductDetailModalProps {
   product: WoodProduct | null;
+  woods: WoodSpecies[];
   onClose: () => void;
   onLoadIntoCustomizer: (product: WoodProduct) => void;
   onDirectAddToOrder: (product: WoodProduct, chosenWood: WoodSpeciesId) => void;
@@ -27,6 +29,7 @@ interface ProductDetailModalProps {
 
 export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
   product,
+  woods,
   onClose,
   onLoadIntoCustomizer,
   onDirectAddToOrder,
@@ -41,30 +44,30 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
 
   if (!product) return null;
 
-  const woodObj = WOOD_SPECIES[selectedWood];
+  const woodObj = woodById(woods, selectedWood);
   const calculatedPrice =
     Math.round((product.basePrice * woodObj.priceMultiplier) / 10000) * 10000;
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/75 backdrop-blur-md animate-fadeIn"
+      className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-6 bg-black/75 backdrop-blur-md animate-fadeIn"
       onClick={onClose}
     >
       <div
-        className="glass-panel-elevated rounded-[28px] max-w-4xl w-full max-h-[90vh] overflow-y-auto p-5 sm:p-8 relative"
+        className="glass-panel-elevated rounded-[24px] sm:rounded-[28px] max-w-4xl w-full max-h-[92vh] overflow-y-auto p-4 sm:p-8 relative"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close Button */}
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-4 left-4 z-20 w-10 h-10 rounded-full glass-panel flex items-center justify-center text-[#F7F2EB] hover:text-[#D49B54] hover:border-[#D49B54] transition-all cursor-pointer"
+          className="absolute top-3 left-3 sm:top-4 sm:left-4 z-20 w-10 h-10 rounded-full glass-panel flex items-center justify-center text-[#F7F2EB] hover:text-[#D49B54] hover:border-[#D49B54] transition-all cursor-pointer"
           aria-label="بستن پنجره"
         >
           <X className="w-5 h-5" />
         </button>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-7 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-7 items-start">
           {/* Right 6 Cols: Visual & Wood Tone Preview */}
           <div className="lg:col-span-6 space-y-4">
             <div className="relative rounded-2xl overflow-hidden aspect-[4/3.5] bg-[#16100B]">
@@ -88,11 +91,11 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                 </span>
               )}
 
-              <div className="absolute bottom-3 inset-x-3 glass-panel rounded-xl p-3 flex items-center justify-between">
-                <span className="text-xs text-[#C8B9A6]">
+              <div className="absolute bottom-3 inset-x-3 glass-panel rounded-xl p-3 flex items-center justify-between gap-2">
+                <span className="text-xs text-[#C8B9A6] min-w-0 truncate">
                   بافت پیش‌نمایش: <strong className="text-[#F7F2EB]">{woodObj.name}</strong>
                 </span>
-                <span className="text-xs text-[#D49B54] font-bold">
+                <span className="text-xs text-[#D49B54] font-bold shrink-0">
                   {product.categoryLabel}
                 </span>
               </div>
@@ -100,24 +103,24 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
 
             {/* Technical Specs Strip */}
             <div className="grid grid-cols-3 gap-2.5">
-              <div className="glass-panel rounded-xl p-3 text-center">
+              <div className="glass-panel rounded-xl p-2 sm:p-3 text-center min-w-0">
                 <Ruler className="w-4 h-4 text-[#D49B54] mx-auto mb-1" />
                 <span className="text-[10px] text-[#C8B9A6] block">ابعاد</span>
-                <span className="text-xs font-bold text-[#F7F2EB] mt-0.5 block tabular-nums-fa">
+                <span className="text-[11px] sm:text-xs font-bold text-[#F7F2EB] mt-0.5 block leading-snug break-words">
                   {product.dimensions.split('(')[0]}
                 </span>
               </div>
-              <div className="glass-panel rounded-xl p-3 text-center">
+              <div className="glass-panel rounded-xl p-2 sm:p-3 text-center min-w-0">
                 <Weight className="w-4 h-4 text-[#D49B54] mx-auto mb-1" />
                 <span className="text-[10px] text-[#C8B9A6] block">وزن خالص</span>
-                <span className="text-xs font-bold text-[#F7F2EB] mt-0.5 block tabular-nums-fa">
+                <span className="text-[11px] sm:text-xs font-bold text-[#F7F2EB] mt-0.5 block leading-snug break-words">
                   {product.weight}
                 </span>
               </div>
-              <div className="glass-panel rounded-xl p-3 text-center">
+              <div className="glass-panel rounded-xl p-2 sm:p-3 text-center min-w-0">
                 <Clock className="w-4 h-4 text-[#D49B54] mx-auto mb-1" />
                 <span className="text-[10px] text-[#C8B9A6] block">ساعت کار دست</span>
-                <span className="text-xs font-bold text-[#F7F2EB] mt-0.5 block tabular-nums-fa">
+                <span className="text-[11px] sm:text-xs font-bold text-[#F7F2EB] mt-0.5 block leading-snug break-words">
                   {toPersianDigits(product.craftHours)} ساعت
                 </span>
               </div>
@@ -146,7 +149,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
               </label>
               <div className="grid grid-cols-2 gap-2">
                 {product.availableWoods.map((wId) => {
-                  const w = WOOD_SPECIES[wId];
+                  const w = woodById(woods, wId);
                   const active = selectedWood === wId;
                   return (
                     <button
@@ -163,7 +166,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                         className="w-6 h-6 rounded-full shrink-0 border border-white/30"
                         style={{ background: w.swatchGradient }}
                       />
-                      <span className="text-xs font-bold text-[#F7F2EB]">{w.name}</span>
+                      <span className="text-xs font-bold text-[#F7F2EB] min-w-0 truncate">{w.name}</span>
                     </button>
                   );
                 })}
@@ -201,14 +204,14 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                 </div>
               </div>
 
-              <div className="flex items-center gap-2.5">
+              <div className="flex items-center gap-2.5 flex-wrap">
                 <button
                   type="button"
                   onClick={() => {
                     onDirectAddToOrder(product, selectedWood);
                     onClose();
                   }}
-                  className="glass-pill hover:border-[#D49B54] px-4 py-3 rounded-xl text-xs font-bold text-[#F7F2EB] flex items-center gap-1.5 cursor-pointer"
+                  className="glass-pill hover:border-[#D49B54] px-4 py-3 rounded-xl text-xs font-bold text-[#F7F2EB] flex items-center justify-center gap-1.5 cursor-pointer flex-1 sm:flex-none"
                 >
                   <ShoppingBag className="w-4 h-4 text-[#D49B54]" />
                   <span>افزودن مستقیم</span>
@@ -220,7 +223,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                     onLoadIntoCustomizer(product);
                     onClose();
                   }}
-                  className="btn-honey-gold px-5 py-3 rounded-xl text-xs sm:text-sm font-black flex items-center gap-2 cursor-pointer"
+                  className="btn-honey-gold px-5 py-3 rounded-xl text-xs sm:text-sm font-black flex items-center justify-center gap-2 cursor-pointer flex-1 sm:flex-none"
                 >
                   <Wand2 className="w-4 h-4" />
                   <span>حکاکی و شخصی‌سازی</span>

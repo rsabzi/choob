@@ -30,6 +30,19 @@
     color: #F7F2EB;
     line-height: 1.75;
     overflow-x: hidden;
+    overflow-x: clip;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Prevent any stray wide element from creating horizontal scroll on small screens */
+  #root {
+    min-width: 0;
+    overflow-x: clip;
+  }
+
+  /* Flex/grid children must be allowed to shrink instead of overflowing */
+  .min-w-0 {
+    min-width: 0;
   }
 }
 
@@ -185,4 +198,51 @@
 
 .animate-float-slow {
   animation: floatSlow 6s ease-in-out infinite;
+}
+
+/* Utilities added for storefront/admin completeness */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px) scale(.995); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.animate-fadeIn {
+  animation: fadeIn .35s cubic-bezier(.22,1,.36,1) both;
+}
+
+select.glass-input option {
+  background-color: #1C1510;
+  color: #F7F2EB;
+}
+
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type='number'] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* Safe-area aware bottom padding (notched phones) */
+.pb-safe {
+  padding-bottom: max(1.25rem, env(safe-area-inset-bottom));
+}
+.bottom-safe {
+  bottom: max(1.5rem, env(safe-area-inset-bottom));
+}
+
+/* Slightly tighter display type on very small phones */
+@media (max-width: 380px) {
+  html {
+    font-size: 15px;
+  }
 }

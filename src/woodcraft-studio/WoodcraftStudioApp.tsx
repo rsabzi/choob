@@ -1,102 +1,115 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { CheckCircle2, ShoppingBag } from 'lucide-react';
 import {
-  PRODUCTS,
   WoodProduct,
-  WOOD_SPECIES,
   WoodSpeciesId,
-  FINISH_OPTIONS,
-  SIZE_OPTIONS,
   OrderCartItem,
+  woodById,
 } from './data/products';
+import { useStudio } from './store/StoreContext';
 import { GlassHeader } from './components/GlassHeader';
 import { HeroSection } from './components/HeroSection';
 import { PortfolioGallery } from './components/PortfolioGallery';
+import { ServicesSection } from './components/ServicesSection';
 import { CustomOrderStudio } from './components/CustomOrderStudio';
+import { CustomProjectSection } from './components/CustomProjectSection';
 import { CraftsmanshipAndReviews } from './components/CraftsmanshipAndReviews';
+import { FaqSection } from './components/FaqSection';
+import { ContactSection } from './components/ContactSection';
 import { ProductDetailModal } from './components/ProductDetailModal';
 import { OrderCheckoutDrawer } from './components/OrderCheckoutDrawer';
+import { OrderTrackingModal } from './components/OrderTrackingModal';
 import { GlassFooter } from './components/GlassFooter';
 
+function scrollToId(id: string) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 export const WoodcraftStudioApp: React.FC = () => {
-  const [selectedCustomizerProduct, setSelectedCustomizerProduct] = useState<WoodProduct>(
-    PRODUCTS[0]
+  const {
+    db,
+    cartItems,
+    cartCount,
+    addToCart,
+    removeFromCart,
+    updateCartQuantity,
+    clearCart,
+    createOrder,
+    submitContactMessage,
+    findOrder,
+  } = useStudio();
+
+  const settings = db.settings;
+  const activeProducts = useMemo(
+    () => db.products.filter((p) => p.isActive !== false),
+    [db.products]
   );
-  const [inspectedModalProduct, setInspectedModalProduct] = useState<WoodProduct | null>(
-    null
+  const activeServices = useMemo(
+    () => db.services.filter((s) => s.active),
+    [db.services]
   );
-  const [cartItems, setCartItems] = useState<OrderCartItem[]>([
-    {
-      cartItemId: 'initial-sample-1',
-      productId: PRODUCTS[0].id,
-      title: PRODUCTS[0].title,
-      categoryLabel: PRODUCTS[0].categoryLabel,
-      image: PRODUCTS[0].image,
-      wood: WOOD_SPECIES[PRODUCTS[0].defaultWood],
-      finish: FINISH_OPTIONS[0],
-      size: SIZE_OPTIONS[0],
-      engravingText: 'خانواده مهرآور',
-      engravingFont: 'nastaaliq',
-      giftPackaging: false,
-      quantity: 1,
-      unitPrice:
-        Math.round(
-          (PRODUCTS[0].basePrice * WOOD_SPECIES[PRODUCTS[0].defaultWood].priceMultiplier) /
-            10000
-        ) * 10000,
-    },
-  ]);
+  const activeTestimonials = useMemo(
+    () => db.testimonials.filter((t) => t.active),
+    [db.testimonials]
+  );
+  const activeFaqs = useMemo(() => db.faqs.filter((f) => f.active), [db.faqs]);
+
+  const [selectedProductId, setSelectedProductId] = useState<string>(
+    activeProducts[0]?.id ?? ''
+  );
+  const selectedCustomizerProduct =
+    activeProducts.find((p) => p.id === selectedProductId) ?? activeProducts[0];
+
+  const [inspectedModalProduct, setInspectedModalProduct] = useState<WoodProduct | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isTrackingOpen, setIsTrackingOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    document.title = `${settings.brandName} | دست‌سازه‌های چوبی سفارشی`;
+  }, [settings.brandName]);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => {
       setToastMessage((prev) => (prev === msg ? null : prev));
-    }, 3200);
+    }, 3400);
   };
 
   const jumpToCustomizerWithProduct = (product: WoodProduct) => {
-    setSelectedCustomizerProduct(product);
-    const el = document.getElementById('customizer');
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    setSelectedProductId(product.id);
+    setInspectedModalProduct(null);
+    scrollToId('customizer');
   };
 
-  const handleQuickAddToOrder = (
-    product: WoodProduct,
-    chosenWoodId?: WoodSpeciesId
-  ) => {
-    const woodObj = WOOD_SPECIES[chosenWoodId || product.defaultWood];
+  const handleQuickAddToOrder = (product: WoodProduct, chosenWoodId?: WoodSpeciesId) => {
+    const woodObj = woodById(db.woods, chosenWoodId || product.defaultWood);
+    const finish = db.finishes[0];
+    const size = db.sizes[0];
+    if (!finish || !size) return;
     const unitPrice =
       Math.round((product.basePrice * woodObj.priceMultiplier) / 10000) * 10000;
 
-    const newItem: OrderCartItem = {
+    addToCart({
       cartItemId: `${product.id}-${woodObj.id}-${Date.now()}`,
       productId: product.id,
       title: product.title,
       categoryLabel: product.categoryLabel,
       image: product.image,
       wood: woodObj,
-      finish: FINISH_OPTIONS[0],
-      size: SIZE_OPTIONS[0],
+      finish,
+      size,
       engravingText: '',
       engravingFont: 'nastaaliq',
       giftPackaging: false,
       quantity: 1,
       unitPrice,
-    };
-
-    setCartItems((prev) => [newItem, ...prev]);
-    showToast(`«${product.title}» با ${woodObj.name} به لیست سفارش افزوده شد.`);
+    });
+    showToast(`«${product.title}» با ${woodObj.name} به سبد سفارش افزوده شد.`);
   };
 
-  const handleAddConfiguredOrder = (
-    item: OrderCartItem,
-    openDrawerImmediately: boolean
-  ) => {
-    setCartItems((prev) => [item, ...prev]);
+  const handleAddConfiguredOrder = (item: OrderCartItem, openDrawerImmediately: boolean) => {
+    addToCart(item);
     if (openDrawerImmediately) {
       setIsDrawerOpen(true);
     } else {
@@ -104,107 +117,134 @@ export const WoodcraftStudioApp: React.FC = () => {
     }
   };
 
-  const handleRemoveCartItem = (cartItemId: string) => {
-    setCartItems((prev) => prev.filter((it) => it.cartItemId !== cartItemId));
-  };
-
-  const handleUpdateQuantity = (cartItemId: string, delta: number) => {
-    setCartItems((prev) =>
-      prev.map((it) => {
-        if (it.cartItemId !== cartItemId) return it;
-        const nextQ = Math.max(1, it.quantity + delta);
-        return { ...it, quantity: nextQ };
-      })
-    );
-  };
-
-  const totalItemsCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-
   return (
-    <div className="min-h-screen bg-[#120E0A] text-[#F7F2EB] wood-grain-pattern relative selection:bg-[#D49B54]/30">
-      {/* Floating Glass Header */}
+    <div className="min-h-screen bg-[#120E0A] text-[#F7F2EB] wood-grain-pattern relative selection:bg-[#D49B54]/30 overflow-x-clip">
       <GlassHeader
-        cartCount={totalItemsCount}
+        brandName={settings.brandName}
+        brandTagline={settings.brandTagline}
+        cartCount={cartCount}
         onOpenCart={() => setIsDrawerOpen(true)}
-        onJumpToCustomizer={() => {
-          const el = document.getElementById('customizer');
-          el?.scrollIntoView({ behavior: 'smooth' });
-        }}
+        onJumpToCustomizer={() => scrollToId('customizer')}
+        onOpenTracking={() => setIsTrackingOpen(true)}
       />
 
-      {/* Main Content */}
       <main>
         <HeroSection
-          products={PRODUCTS}
+          products={activeProducts}
+          woods={db.woods}
+          settings={settings}
           onSelectProductForCustomizing={jumpToCustomizerWithProduct}
           onQuickInspect={(prod) => setInspectedModalProduct(prod)}
         />
 
         <PortfolioGallery
-          products={PRODUCTS}
+          products={activeProducts}
+          woods={db.woods}
           onInspectProduct={(prod) => setInspectedModalProduct(prod)}
           onCustomizeProduct={jumpToCustomizerWithProduct}
           onQuickAddToOrder={(prod) => handleQuickAddToOrder(prod)}
         />
 
-        <CustomOrderStudio
-          products={PRODUCTS}
-          selectedProduct={selectedCustomizerProduct}
-          onSelectProduct={setSelectedCustomizerProduct}
-          onAddConfiguredOrder={handleAddConfiguredOrder}
+        <ServicesSection
+          services={activeServices}
+          onStartCustomProject={() => scrollToId('custom-project')}
+          onJumpToCustomizer={() => scrollToId('customizer')}
+        />
+
+        {selectedCustomizerProduct && (
+          <CustomOrderStudio
+            products={activeProducts}
+            woods={db.woods}
+            finishes={db.finishes}
+            sizes={db.sizes}
+            giftBoxPrice={settings.giftBoxPrice}
+            selectedProduct={selectedCustomizerProduct}
+            onSelectProduct={(p) => setSelectedProductId(p.id)}
+            onAddConfiguredOrder={handleAddConfiguredOrder}
+          />
+        )}
+
+        <CustomProjectSection
+          woods={db.woods}
+          whatsappNumber={settings.whatsappNumber}
+          onCreateOrder={createOrder}
+          onOpenTracking={() => setIsTrackingOpen(true)}
         />
 
         <CraftsmanshipAndReviews
-          onJumpToCustomizer={() => {
-            const el = document.getElementById('customizer');
-            el?.scrollIntoView({ behavior: 'smooth' });
-          }}
+          woods={db.woods}
+          testimonials={activeTestimonials}
+          ratingSummary={settings.ratingSummary}
+          onJumpToCustomizer={() => scrollToId('customizer')}
         />
+
+        <FaqSection
+          faqs={activeFaqs}
+          phoneDisplay={settings.phoneDisplay}
+          onOpenTracking={() => setIsTrackingOpen(true)}
+        />
+
+        <ContactSection settings={settings} onSubmitMessage={submitContactMessage} />
       </main>
 
-      {/* Footer & Custom Sketch Inquiry Banner */}
       <GlassFooter
-        onOpenCustomOrderDrawer={() => setIsDrawerOpen(true)}
-        onJumpToCustomizer={() => {
-          const el = document.getElementById('customizer');
-          el?.scrollIntoView({ behavior: 'smooth' });
-        }}
+        settings={settings}
+        onOpenCustomProject={() => scrollToId('custom-project')}
+        onJumpToCustomizer={() => scrollToId('customizer')}
+        onOpenTracking={() => setIsTrackingOpen(true)}
       />
 
-      {/* Product Detail Inspection Modal */}
       <ProductDetailModal
         product={inspectedModalProduct}
+        woods={db.woods}
         onClose={() => setInspectedModalProduct(null)}
         onLoadIntoCustomizer={jumpToCustomizerWithProduct}
-        onDirectAddToOrder={(prod, chosenWood) =>
-          handleQuickAddToOrder(prod, chosenWood)
-        }
+        onDirectAddToOrder={(prod, chosenWood) => handleQuickAddToOrder(prod, chosenWood)}
       />
 
-      {/* Order Checkout Drawer */}
       <OrderCheckoutDrawer
         isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
         items={cartItems}
-        onRemoveItem={handleRemoveCartItem}
-        onUpdateQuantity={handleUpdateQuantity}
-        onClearCart={() => setCartItems([])}
+        settings={settings}
+        coupons={db.coupons}
+        onRemoveItem={removeFromCart}
+        onUpdateQuantity={updateCartQuantity}
+        onClearCart={clearCart}
+        onGoCustomProject={() => scrollToId('custom-project')}
+        onOpenTracking={() => setIsTrackingOpen(true)}
+        onSubmitOrder={(customer, totals) => {
+          const order = createOrder({
+            type: 'cart',
+            customer,
+            items: cartItems,
+            subtotal: totals.subtotal,
+            shippingCost: totals.shippingCost,
+            discountAmount: totals.discountAmount,
+            couponCode: totals.couponCode,
+            total: totals.total,
+          });
+          return order.code;
+        }}
       />
 
-      {/* Floating Glass Toast Notification */}
+      <OrderTrackingModal
+        isOpen={isTrackingOpen}
+        onClose={() => setIsTrackingOpen(false)}
+        onFindOrder={findOrder}
+      />
+
       {toastMessage && (
-        <div className="fixed bottom-6 left-6 z-50 glass-panel-elevated rounded-2xl px-4 py-3.5 flex items-center gap-3 shadow-2xl border border-[#D49B54] max-w-sm animate-bounce">
+        <div className="fixed bottom-safe right-4 left-4 sm:right-6 sm:left-auto z-50 glass-panel-elevated rounded-2xl px-4 py-3.5 flex items-center gap-3 shadow-2xl border border-[#D49B54] max-w-sm animate-fadeIn">
           <CheckCircle2 className="w-5 h-5 text-[#4E9F6E] shrink-0" />
-          <span className="text-xs sm:text-sm font-bold text-[#F7F2EB]">
-            {toastMessage}
-          </span>
+          <span className="text-xs sm:text-sm font-bold text-[#F7F2EB] flex-1">{toastMessage}</span>
           <button
             type="button"
             onClick={() => setIsDrawerOpen(true)}
             className="px-2.5 py-1 rounded-lg bg-[#D49B54] text-[#120E0A] text-xs font-black shrink-0 flex items-center gap-1 cursor-pointer"
           >
             <ShoppingBag className="w-3.5 h-3.5" />
-            مشاهده
+            مشاهده سبد
           </button>
         </div>
       )}

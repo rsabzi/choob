@@ -9,61 +9,28 @@ import {
   Compass,
   PackageCheck,
 } from 'lucide-react';
-import {
-  WOOD_SPECIES,
-  WoodSpeciesId,
-  toPersianDigits,
-} from '../data/products';
-
-const CUSTOMER_REVIEWS = [
-  {
-    id: 'rev-1',
-    name: 'مهندس آرش کامرانی',
-    city: 'تهران — الهیه',
-    productOrdered: 'ساعت دیواری آوروم (چوب گردو سیاه) + استند لپ‌تاپ آرک',
-    rating: 5,
-    date: '۲ هفته پیش',
-    comment:
-      'کیفیت پرداخت چوب گردو واقعاً در حد برندهای لوکس اروپایی است. وقتی بسته را باز کردم بوی ملایم موم طبیعی و چوب کل اتاق کارم را پر کرد. قبل از ارسال هم عکس سه تا اسلب گردو را در واتساپ برایم فرستادند تا خودم نقش چوب ساعتم را انتخاب کنم.',
-  },
-  {
-    id: 'rev-2',
-    name: 'دکتر نیلوفر ستوده',
-    city: 'اصفهان — چهارباغ بالا',
-    productOrdered: 'داک گوشی و ساعت مونولیت با حکاکی اختصاصی',
-    rating: 5,
-    date: 'ماه گذشته',
-    comment:
-      'برای هدیه تولد همسرم داک رومیزی چوب زیتون را با حکاکی تاریخ آشنایی‌مان سفارش دادم. ظرافت حکاکی لیزری و جعبه کادویی موم‌مهر شده آن‌قدر شیک بود که همسرم فکر می‌کرد یک اثر کلکسیونی وارداتی است. ممنون از دقت و خوش‌قولی‌تان.',
-  },
-  {
-    id: 'rev-3',
-    name: 'سروش مجد (مدیر استودیو معماری)',
-    city: 'شیراز — قصرالدشت',
-    productOrdered: '۱۲ عدد ست رومیزی آتلیه و جاکلیدی دیواری نوا (هدایای پایان سال)',
-    rating: 5,
-    date: '۳ هفته پیش',
-    comment:
-      'برای هدیه به کارفرماهای VIP دفتر معماری دنبال کاری بودیم که تبلیغاتیِ تکراری نباشد و حس اصالت چوب طبیعی را منتقل کند. جاکلیدی‌های مغناطیسی نوا با لوگوی ظریف استودیو ما فوق‌العاده از آب درآمدند و بازخورد بی‌نظیری گرفتیم.',
-  },
-];
+import { WoodSpecies, WoodSpeciesId, woodById } from '../data/products';
+import type { Testimonial } from '../store/types';
 
 export const CraftsmanshipAndReviews: React.FC<{
+  woods: WoodSpecies[];
+  testimonials: Testimonial[];
+  ratingSummary: string;
   onJumpToCustomizer: () => void;
-}> = ({ onJumpToCustomizer }) => {
-  const [inspectedWood, setInspectedWood] = useState<WoodSpeciesId>('walnut');
-  const wood = WOOD_SPECIES[inspectedWood];
+}> = ({ woods, testimonials, ratingSummary, onJumpToCustomizer }) => {
+  const [inspectedWood, setInspectedWood] = useState<WoodSpeciesId>(woods[0]?.id ?? 'walnut');
+  const wood = woodById(woods, inspectedWood);
 
   return (
     <>
       {/* Wood Species & Workshop Process Section */}
       <section
         id="woods"
-        className="relative py-20 px-4 sm:px-6 lg:px-8 scroll-mt-20"
+        className="relative py-16 sm:py-20 px-4 sm:px-6 lg:px-8 scroll-mt-20 overflow-x-clip"
       >
         <div className="max-w-[1360px] mx-auto space-y-16">
           {/* Interactive Wood Guide */}
-          <div className="glass-panel-elevated rounded-[30px] p-6 sm:p-10">
+          <div className="glass-panel-elevated rounded-[30px] p-4 sm:p-10">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
               <div className="lg:col-span-5 space-y-4">
                 <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full glass-pill text-xs font-bold text-[#D49B54]">
@@ -81,14 +48,13 @@ export const CraftsmanshipAndReviews: React.FC<{
 
                 {/* Wood Species Tabs */}
                 <div className="grid grid-cols-2 gap-2.5 pt-2">
-                  {(Object.keys(WOOD_SPECIES) as WoodSpeciesId[]).map((wId) => {
-                    const item = WOOD_SPECIES[wId];
-                    const active = inspectedWood === wId;
+                  {woods.map((item) => {
+                    const active = inspectedWood === item.id;
                     return (
                       <button
-                        key={wId}
+                        key={item.id}
                         type="button"
-                        onClick={() => setInspectedWood(wId)}
+                        onClick={() => setInspectedWood(item.id)}
                         className={`p-3 rounded-2xl text-right flex items-center gap-2.5 transition-all cursor-pointer border ${
                           active
                             ? 'bg-[#FFF4E5]/15 border-[#D49B54] shadow-md'
@@ -175,8 +141,8 @@ export const CraftsmanshipAndReviews: React.FC<{
           </div>
 
           {/* 3-Step Artisanal Process Strip */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="glass-panel rounded-[22px] p-6 flex items-start gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="glass-panel rounded-[22px] p-5 sm:p-6 flex items-start gap-4">
               <div className="w-12 h-12 rounded-2xl bg-[#D49B54]/15 border border-[#D49B54]/35 flex items-center justify-center text-[#D49B54] shrink-0">
                 <Compass className="w-6 h-6" />
               </div>
@@ -236,7 +202,7 @@ export const CraftsmanshipAndReviews: React.FC<{
       {/* Customer Reviews & Social Proof Section */}
       <section
         id="reviews"
-        className="relative py-16 md:py-20 px-4 sm:px-6 lg:px-8 scroll-mt-20"
+        className="relative py-14 sm:py-16 md:py-20 px-4 sm:px-6 lg:px-8 scroll-mt-20 overflow-x-clip"
       >
         <div className="max-w-[1360px] mx-auto">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
@@ -257,16 +223,16 @@ export const CraftsmanshipAndReviews: React.FC<{
                 ))}
               </div>
               <span className="text-xs sm:text-sm font-extrabold text-[#F7F2EB] tabular-nums-fa">
-                امتیاز {toPersianDigits('4.9')} از {toPersianDigits(5)} (بر اساس +{toPersianDigits(340)} نظر ثبت‌شده)
+                {ratingSummary}
               </span>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {CUSTOMER_REVIEWS.map((rev) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {testimonials.map((rev) => (
               <div
                 key={rev.id}
-                className="glass-card-interactive rounded-[24px] p-6 flex flex-col justify-between"
+                className="glass-card-interactive rounded-[24px] p-5 sm:p-6 flex flex-col justify-between min-w-0"
               >
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-4">
