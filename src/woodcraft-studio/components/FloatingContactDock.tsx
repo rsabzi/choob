@@ -1,5 +1,5 @@
-import React from 'react';
-import { MessageSquare, PhoneCall } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { ChevronUp, MessageSquare, PhoneCall, X } from 'lucide-react';
 import { toIntlPhone } from '../data/products';
 import type { SiteSettings } from '../store/types';
 
@@ -20,6 +20,17 @@ interface FloatingContactDockProps {
 }
 
 export const FloatingContactDock: React.FC<FloatingContactDockProps> = ({ settings }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setIsOpen(false);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isOpen]);
+
   const intlPhone = toIntlPhone(settings.whatsappNumber || settings.phoneDisplay);
   const telegramId = settings.telegramId.replace(/^@+/, '').trim();
   const whatsappText = encodeURIComponent(
@@ -29,12 +40,38 @@ export const FloatingContactDock: React.FC<FloatingContactDockProps> = ({ settin
   const buttonBase =
     'h-11 min-w-11 px-0 min-[420px]:px-3.5 rounded-full flex items-center justify-center gap-2 text-xs font-extrabold shadow-lg transition-all duration-300 hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70';
 
+  if (!isOpen) {
+    return (
+      <aside
+        aria-label="تماس سریع با صاحب کارگاه"
+        className="fixed z-40 bottom-3 sm:bottom-5 left-1/2 -translate-x-1/2 sm:left-5 sm:translate-x-0 animate-fadeIn"
+      >
+        <button
+          type="button"
+          onClick={() => setIsOpen(true)}
+          aria-expanded={false}
+          aria-controls="quick-contact-actions"
+          className="btn-honey-gold h-12 rounded-full pl-4 pr-3 flex items-center gap-2 shadow-2xl cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+        >
+          <span className="w-8 h-8 rounded-full bg-[#120E0A]/15 flex items-center justify-center shrink-0">
+            <MessageSquare className="w-5 h-5" />
+          </span>
+          <span className="text-sm font-black whitespace-nowrap">تماس سریع</span>
+          <ChevronUp className="w-4 h-4 shrink-0" />
+        </button>
+      </aside>
+    );
+  }
+
   return (
     <aside
       aria-label="تماس سریع با صاحب کارگاه"
       className="fixed z-40 bottom-3 sm:bottom-5 left-1/2 -translate-x-1/2 sm:left-5 sm:translate-x-0 animate-fadeIn"
     >
-      <div className="glass-panel-elevated rounded-full p-1.5 flex items-center gap-1.5 border-[#D49B54]/40">
+      <div
+        id="quick-contact-actions"
+        className="glass-panel-elevated rounded-full p-1.5 flex items-center gap-1.5 border-[#D49B54]/40 max-w-[calc(100vw-1.5rem)]"
+      >
         <span className="hidden lg:flex items-center gap-1.5 pl-2 pr-1.5 text-[11px] font-extrabold text-[#E5B26D] whitespace-nowrap">
           <MessageSquare className="w-4 h-4" />
           تماس سریع
@@ -48,6 +85,7 @@ export const FloatingContactDock: React.FC<FloatingContactDockProps> = ({ settin
             className={`${buttonBase} bg-[#25D366] text-[#062E16] hover:bg-[#3EE075]`}
             aria-label={`ارسال پیام واتساپ به ${settings.phoneDisplay}`}
             title={`واتساپ: ${settings.phoneDisplay}`}
+            onClick={() => setIsOpen(false)}
           >
             <WhatsAppIcon className="w-5 h-5 shrink-0" />
             <span className="hidden min-[420px]:inline">واتساپ</span>
@@ -62,6 +100,7 @@ export const FloatingContactDock: React.FC<FloatingContactDockProps> = ({ settin
             className={`${buttonBase} bg-[#229ED9] text-white hover:bg-[#3DB4EC]`}
             aria-label={`ارسال پیام تلگرام به ${telegramId}`}
             title={`تلگرام: @${telegramId}`}
+            onClick={() => setIsOpen(false)}
           >
             <TelegramIcon className="w-5 h-5 shrink-0" />
             <span className="hidden min-[420px]:inline">تلگرام</span>
@@ -74,11 +113,24 @@ export const FloatingContactDock: React.FC<FloatingContactDockProps> = ({ settin
             className={`${buttonBase} btn-honey-gold`}
             aria-label={`تماس تلفنی با ${settings.phoneDisplay}`}
             title={`تماس: ${settings.phoneDisplay}`}
+            onClick={() => setIsOpen(false)}
           >
             <PhoneCall className="w-5 h-5 shrink-0" />
             <span className="hidden min-[420px]:inline">تماس تلفنی</span>
           </a>
         )}
+
+        <button
+          type="button"
+          onClick={() => setIsOpen(false)}
+          aria-expanded={true}
+          aria-controls="quick-contact-actions"
+          aria-label="بستن تماس سریع"
+          title="بستن"
+          className="h-11 w-11 shrink-0 rounded-full glass-pill flex items-center justify-center text-[#F7F2EB] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+        >
+          <X className="w-5 h-5" />
+        </button>
       </div>
     </aside>
   );
