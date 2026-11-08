@@ -160,7 +160,7 @@ function seedOrders(): Order[] {
 
 export function createSeedDB(): StudioDB {
   return {
-    version: 1,
+    version: 2,
     settings: {
       brandName: 'استودیو چوب و هنر اُرسی',
       brandTagline: 'ساعت دیواری، استند لپ‌تاپ و اکسسوری‌های تزیینی چوب طبیعی',
@@ -179,11 +179,11 @@ export function createSeedDB(): StudioDB {
       aboutText:
         'ما در آتلیه اُرسی با ترکیب چوب‌های اصیل گردو، بلوط، راش و زیتون با یراق‌آلات برنجی دست‌ساز، اشیایی می‌سازیم که هر روز روی میز کار یا دیوار خانه‌تان از تماشا و لمس آن‌ها لذت ببرید.',
       footerNote: 'ساخته‌شده با عشق به چوب طبیعی و هنر دست نجاران ایرانی',
-      phoneDisplay: '۰۹۱۲ - ۴۸۰ - ۹۲۱۰',
-      whatsappNumber: '989124809210',
-      telegramId: 'orsiwood',
-      instagramId: 'orsi.woodstudio',
-      email: 'hello@example.com',
+      phoneDisplay: '۰۹۱۶ - ۹۶۰ - ۹۶۹۴',
+      whatsappNumber: '989169609694',
+      telegramId: 'Ixtohc',
+      instagramId: '',
+      email: 'alisabzi9694@gmail.com',
       address: 'تهران، شهرک صنعتی چهارصددستگاه (بازدید حضوری از اسلب‌ها با هماهنگی قبلی)',
       workingHours: 'شنبه تا پنج‌شنبه ساعت ۹ تا ۲۱',
       shippingCost: 120000,

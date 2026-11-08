@@ -2,6 +2,7 @@ import React from 'react';
 import {
   TreePine,
   PhoneCall,
+  MessageCircle,
   MapPin,
   Clock,
   Sparkles,
@@ -27,8 +28,11 @@ export const GlassFooter: React.FC<GlassFooterProps> = ({
   onJumpToCustomizer,
   onOpenTracking,
 }) => {
+  const intlPhone = settings.whatsappNumber.replace(/[^0-9]/g, '');
+  const telegramId = settings.telegramId.replace(/^@+/, '').trim();
+
   return (
-    <footer className="relative pt-10 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
+    <footer className="relative pt-10 pb-32 sm:pb-24 px-4 sm:px-6 lg:px-8 overflow-hidden">
       <div className="max-w-[1360px] mx-auto space-y-12">
         {/* Bespoke Idea Callout Banner */}
         <div className="glass-panel-elevated rounded-[30px] p-5 sm:p-10 relative overflow-hidden">
@@ -124,15 +128,62 @@ export const GlassFooter: React.FC<GlassFooterProps> = ({
               <div className="space-y-2.5 text-xs sm:text-sm text-[#C8B9A6]">
                 <div className="flex items-center gap-2.5">
                   <PhoneCall className="w-4 h-4 text-[#D49B54] shrink-0" />
-                  <span>تلفن و واتساپ مشاوره: {settings.phoneDisplay}</span>
+                  <span>
+                    تلفن و واتساپ صاحب کارگاه:{' '}
+                    <a href={intlPhone ? `tel:+${intlPhone}` : '#contact'} className="font-extrabold text-[#F7F2EB] hover:text-[#E5B26D] transition-colors">
+                      {settings.phoneDisplay}
+                    </a>
+                  </span>
                 </div>
-                <div className="flex items-center gap-2.5">
-                  <Send className="w-4 h-4 text-[#D49B54] shrink-0" />
-                  <span>تلگرام: <span dir="ltr">@{settings.telegramId}</span> • اینستاگرام: <span dir="ltr">@{settings.instagramId}</span></span>
-                </div>
+                {telegramId && (
+                  <div className="flex items-center gap-2.5">
+                    <Send className="w-4 h-4 text-[#D49B54] shrink-0" />
+                    <span>
+                      تلگرام:{' '}
+                      <a href={`https://t.me/${telegramId}`} target="_blank" rel="noopener noreferrer" className="font-bold text-[#8ED8FF] hover:underline" dir="ltr">
+                        @{telegramId}
+                      </a>
+                      {settings.instagramId && (
+                        <span> • اینستاگرام: <span dir="ltr">@{settings.instagramId}</span></span>
+                      )}
+                    </span>
+                  </div>
+                )}
                 <div className="flex items-center gap-2.5">
                   <Mail className="w-4 h-4 text-[#D49B54] shrink-0" />
-                  <span dir="ltr" className="text-right">{settings.email}</span>
+                  <a href={`mailto:${settings.email}`} className="hover:text-[#E5B26D] transition-colors" dir="ltr">
+                    {settings.email}
+                  </a>
+                </div>
+                <div className="flex flex-wrap gap-2 pt-1.5">
+                  {intlPhone && (
+                    <a
+                      href={`https://wa.me/${intlPhone}?text=${encodeURIComponent('سلام وقت بخیر، درباره محصولات و سفارش راهنمایی می‌خواهم.')}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3.5 py-2.5 rounded-xl bg-[#25D366]/15 border border-[#25D366]/45 text-[#7CFFB2] text-[11px] font-extrabold flex items-center gap-1.5 hover:bg-[#25D366]/25 transition-colors"
+                    >
+                      <MessageCircle className="w-4 h-4" /> واتساپ
+                    </a>
+                  )}
+                  {telegramId && (
+                    <a
+                      href={`https://t.me/${telegramId}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3.5 py-2.5 rounded-xl bg-[#229ED9]/15 border border-[#229ED9]/45 text-[#8ED8FF] text-[11px] font-extrabold flex items-center gap-1.5 hover:bg-[#229ED9]/25 transition-colors"
+                    >
+                      <Send className="w-4 h-4" /> تلگرام
+                    </a>
+                  )}
+                  {intlPhone && (
+                    <a
+                      href={`tel:+${intlPhone}`}
+                      className="px-3.5 py-2.5 rounded-xl bg-[#D49B54]/15 border border-[#D49B54]/45 text-[#E5B26D] text-[11px] font-extrabold flex items-center gap-1.5 hover:bg-[#D49B54]/25 transition-colors"
+                    >
+                      <PhoneCall className="w-4 h-4" /> تماس تلفنی
+                    </a>
+                  )}
                 </div>
                 <div className="flex items-start gap-2.5">
                   <MapPin className="w-4 h-4 text-[#D49B54] shrink-0 mt-1" />

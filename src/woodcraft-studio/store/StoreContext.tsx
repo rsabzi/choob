@@ -33,10 +33,29 @@ function loadDB(): StudioDB {
     const raw = localStorage.getItem(DB_KEY);
     if (!raw) return seed;
     const parsed = JSON.parse(raw) as Partial<StudioDB>;
+    const mergedSettings = { ...seed.settings, ...(parsed.settings ?? {}) };
+    // One-time migration: browsers that visited the demo build still hold the
+    // sample contact details. Replace only those exact placeholders with the
+    // site owner's real contacts; anything the admin customized stays untouched.
+    const legacySampleContacts = {
+      phoneDisplay: '۰۹۱۲ - ۴۸۰ - ۹۲۱۰',
+      whatsappNumber: '989124809210',
+      telegramId: 'orsiwood',
+      instagramId: 'orsi.woodstudio',
+      email: 'hello@example.com',
+    } as const;
+    (
+      Object.keys(legacySampleContacts) as (keyof typeof legacySampleContacts)[]
+    ).forEach((key) => {
+      if (mergedSettings[key] === legacySampleContacts[key]) {
+        mergedSettings[key] = seed.settings[key];
+      }
+    });
     return {
       ...seed,
       ...parsed,
-      settings: { ...seed.settings, ...(parsed.settings ?? {}) },
+      version: Math.max(parsed.version ?? 1, seed.version),
+      settings: mergedSettings,
       products: Array.isArray(parsed.products) ? parsed.products : seed.products,
       woods: Array.isArray(parsed.woods) && parsed.woods.length ? parsed.woods : seed.woods,
       finishes:
