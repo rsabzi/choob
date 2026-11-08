@@ -20,6 +20,7 @@ import { ProductDetailModal } from './components/ProductDetailModal';
 import { OrderCheckoutDrawer } from './components/OrderCheckoutDrawer';
 import { OrderTrackingModal } from './components/OrderTrackingModal';
 import { GlassFooter } from './components/GlassFooter';
+import { FloatingContactDock } from './components/FloatingContactDock';
 
 function scrollToId(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -193,6 +194,8 @@ export const WoodcraftStudioApp: React.FC = () => {
         onJumpToCustomizer={() => scrollToId('customizer')}
         onOpenTracking={() => setIsTrackingOpen(true)}
       />
+
+      <FloatingContactDock settings={settings} />
 
       <ProductDetailModal
         product={inspectedModalProduct}

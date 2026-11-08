@@ -27,6 +27,9 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
   settings,
   onSubmitMessage,
 }) => {
+  const intlPhone = settings.whatsappNumber.replace(/[^0-9]/g, '');
+  const telegramId = settings.telegramId.replace(/^@+/, '').trim();
+
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [subject, setSubject] = useState('مشاوره خرید و انتخاب چوب');
@@ -85,13 +88,63 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
                 <PhoneCall className="w-5 h-5" />
               </div>
               <div>
-                <div className="text-xs text-[#8A7968] font-bold">تلفن و واتساپ</div>
-                <div className="text-sm font-extrabold text-[#F7F2EB] mt-0.5">
+                <div className="text-xs text-[#8A7968] font-bold">تلفن، واتساپ و تلگرام صاحب کارگاه</div>
+                <a
+                  href={intlPhone ? `tel:+${intlPhone}` : '#contact'}
+                  className="block text-sm font-extrabold text-[#F7F2EB] hover:text-[#E5B26D] transition-colors mt-0.5"
+                >
                   {settings.phoneDisplay}
-                </div>
+                </a>
                 <div className="text-[11px] text-[#C8B9A6]">
-                  تلگرام <span dir="ltr">@{settings.telegramId}</span> • اینستاگرام{' '}
-                  <span dir="ltr">@{settings.instagramId}</span>
+                  {telegramId && (
+                    <>
+                      تلگرام{' '}
+                      <a
+                        href={`https://t.me/${telegramId}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[#8ED8FF] font-bold hover:underline"
+                        dir="ltr"
+                      >
+                        @{telegramId}
+                      </a>
+                    </>
+                  )}
+                  {settings.instagramId && (
+                    <>
+                      {' '}• اینستاگرام <span dir="ltr">@{settings.instagramId}</span>
+                    </>
+                  )}
+                </div>
+                <div className="flex flex-wrap gap-2 mt-3">
+                  {intlPhone && (
+                    <a
+                      href={`https://wa.me/${intlPhone}?text=${encodeURIComponent('سلام وقت بخیر، درباره محصولات و سفارش راهنمایی می‌خواهم.')}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3 py-2 rounded-lg bg-[#25D366]/15 border border-[#25D366]/45 text-[#7CFFB2] text-[11px] font-extrabold"
+                    >
+                      پیام در واتساپ
+                    </a>
+                  )}
+                  {telegramId && (
+                    <a
+                      href={`https://t.me/${telegramId}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3 py-2 rounded-lg bg-[#229ED9]/15 border border-[#229ED9]/45 text-[#8ED8FF] text-[11px] font-extrabold"
+                    >
+                      پیام در تلگرام
+                    </a>
+                  )}
+                  {intlPhone && (
+                    <a
+                      href={`tel:+${intlPhone}`}
+                      className="px-3 py-2 rounded-lg bg-[#D49B54]/15 border border-[#D49B54]/45 text-[#E5B26D] text-[11px] font-extrabold"
+                    >
+                      تماس تلفنی
+                    </a>
+                  )}
                 </div>
               </div>
             </div>
@@ -115,10 +168,13 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
                 <div className="text-sm font-extrabold text-[#F7F2EB] mt-0.5">
                   {settings.workingHours}
                 </div>
-                <div className="text-[11px] text-[#C8B9A6] flex items-center gap-1.5 mt-0.5">
+                <a
+                  href={`mailto:${settings.email}`}
+                  className="text-[11px] text-[#C8B9A6] hover:text-[#E5B26D] transition-colors flex items-center gap-1.5 mt-1"
+                >
                   <Mail className="w-3.5 h-3.5" />
                   <span dir="ltr">{settings.email}</span>
-                </div>
+                </a>
               </div>
             </div>
           </div>
