@@ -6,6 +6,156 @@ export const inputCls =
 
 export const labelCls = 'block text-xs font-bold text-[#C8B9A6] mb-1.5';
 
+const PERSIAN_DIGITS = '۰۱۲۳۴۵۶۷۸۹';
+const ARABIC_DIGITS = '٠١٢٣٤٥٦٧٨٩';
+
+function toEnglishNumberDigits(value: string): string {
+  return value
+    .replace(/[۰-۹]/g, (digit) => String(PERSIAN_DIGITS.indexOf(digit)))
+    .replace(/[٠-٩]/g, (digit) => String(ARABIC_DIGITS.indexOf(digit)));
+}
+
+function toPersianNumberDigits(value: string | number): string {
+  return String(value).replace(/\d/g, (digit) => PERSIAN_DIGITS[Number(digit)]);
+}
+
+function cleanNumberInput(raw: string, decimal: boolean, allowNegative: boolean): string {
+  let text = raw.replace(/[,،٬\s\u00A0]/g, '');
+  const negative = allowNegative && text.trimStart().startsWith('-');
+  text = text.replace(/-/g, '');
+
+  if (decimal) {
+    text = text.replace(/[٫/]/g, '.');
+    const firstDot = text.indexOf('.');
+    if (firstDot >= 0) {
+      text = text.slice(0, firstDot + 1) + text.slice(firstDot + 1).replace(/\./g, '');
+    }
+    text = text.replace(/[^0-9۰-۹٠-٩.]/g, '');
+  } else {
+    text = text.replace(/[^0-9۰-۹٠-٩]/g, '');
+  }
+
+  return `${negative ? '-' : ''}${text}`;
+}
+
+function parseNumberInput(text: string): number {
+  const normalized = toEnglishNumberDigits(text);
+  if (!normalized || normalized === '-' || normalized === '.' || normalized === '-.') {
+    return Number.NaN;
+  }
+  return Number(normalized);
+}
+
+function clampNumberInput(value: number, min?: number, max?: number): number {
+  let next = value;
+  if (min !== undefined) next = Math.max(min, next);
+  if (max !== undefined) next = Math.min(max, next);
+  return next;
+}
+
+function formatNumberInput(value: number, decimal: boolean, groupThousands: boolean): string {
+  if (!Number.isFinite(value)) return '';
+  if (!groupThousands) return toPersianNumberDigits(decimal ? String(value) : String(Math.trunc(value)));
+
+  const sign = value < 0 ? '-' : '';
+  const absolute = Math.abs(value);
+  const [integerPart, fractionPart] = String(absolute).split('.');
+  const groupedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  return toPersianNumberDigits(
+    `${sign}${groupedInteger}${fractionPart ? `.${fractionPart}` : ''}`
+  );
+}
+
+export interface NumberInputProps
+  extends Omit<
+    React.InputHTMLAttributes<HTMLInputElement>,
+    'value' | 'onChange' | 'type' | 'defaultValue'
+  > {
+  value: number;
+  onChange: (value: number) => void;
+  fallback?: number;
+  decimal?: boolean;
+  groupThousands?: boolean;
+  min?: number;
+  max?: number;
+}
+
+/**
+ * Numeric input designed for the Persian admin panel.
+ *
+ * Unlike <input type="number">, this keeps the text being typed untouched:
+ * the admin can clear the field completely, type Persian/Arabic/Latin digits,
+ * paste amounts with thousand separators, and enter decimal multipliers.
+ * The numeric value is clamped and formatted when the field loses focus.
+ */
+export const NumberInput: React.FC<NumberInputProps> = ({
+  value,
+  onChange,
+  fallback = 0,
+  decimal = false,
+  groupThousands = false,
+  min,
+  max,
+  className = '',
+  onFocus,
+  onBlur,
+  ...props
+}) => {
+  const [text, setText] = React.useState(() =>
+    formatNumberInput(value, decimal, groupThousands)
+  );
+  const [isFocused, setIsFocused] = React.useState(false);
+  const lastValueRef = React.useRef(value);
+
+  React.useEffect(() => {
+    if (isFocused || value === lastValueRef.current) return;
+    lastValueRef.current = value;
+    setText(formatNumberInput(value, decimal, groupThousands));
+  }, [value, isFocused, decimal, groupThousands]);
+
+  const emit = (next: number) => {
+    lastValueRef.current = next;
+    onChange(next);
+  };
+
+  return (
+    <input
+      {...props}
+      type="text"
+      dir="ltr"
+      inputMode={decimal ? 'decimal' : 'numeric'}
+      autoComplete="off"
+      className={`${className} text-left`}
+      value={text}
+      onFocus={(event) => {
+        setIsFocused(true);
+        setText((current) => current.replace(/,/g, ''));
+        onFocus?.(event);
+      }}
+      onChange={(event) => {
+        const allowNegative = min === undefined || min < 0;
+        const cleaned = cleanNumberInput(event.target.value, decimal, allowNegative);
+        setText(cleaned);
+
+        const parsed = parseNumberInput(cleaned);
+        if (Number.isFinite(parsed)) {
+          emit(decimal ? parsed : Math.trunc(parsed));
+        }
+      }}
+      onBlur={(event) => {
+        setIsFocused(false);
+        const parsed = parseNumberInput(text);
+        const normalized = Number.isFinite(parsed)
+          ? clampNumberInput(decimal ? parsed : Math.trunc(parsed), min, max)
+          : clampNumberInput(fallback, min, max);
+        emit(normalized);
+        setText(formatNumberInput(normalized, decimal, groupThousands));
+        onBlur?.(event);
+      }}
+    />
+  );
+};
+
 export const Field: React.FC<{
   label: string;
   children: React.ReactNode;

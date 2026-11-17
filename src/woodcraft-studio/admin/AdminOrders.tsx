@@ -19,7 +19,7 @@ import {
   type Order,
   type OrderStatus,
 } from '../store/types';
-import { AdminModal, Field, downloadFile, formatDateTime, inputCls } from './ui';
+import { AdminModal, Field, NumberInput, downloadFile, formatDateTime, inputCls } from './ui';
 
 interface AdminOrdersProps {
   orders: Order[];
@@ -71,7 +71,7 @@ export const AdminOrders: React.FC<AdminOrdersProps> = ({
   const [typeFilter, setTypeFilter] = useState<'all' | 'cart' | 'custom'>(defaultTypeFilter);
   const [selected, setSelected] = useState<Order | null>(null);
   const [adminNoteDraft, setAdminNoteDraft] = useState('');
-  const [quotedPrice, setQuotedPrice] = useState('');
+  const [quotedPrice, setQuotedPrice] = useState(0);
 
   const filtered = useMemo(() => {
     const q = search.trim();
@@ -91,7 +91,7 @@ export const AdminOrders: React.FC<AdminOrdersProps> = ({
   const openDetail = (order: Order) => {
     setSelected(order);
     setAdminNoteDraft(order.adminNote);
-    setQuotedPrice(order.total > 0 ? String(order.total) : '');
+    setQuotedPrice(order.total > 0 ? order.total : 0);
   };
 
   const changeStatus = (order: Order, status: OrderStatus) => {
@@ -351,17 +351,22 @@ export const AdminOrders: React.FC<AdminOrdersProps> = ({
                   <div className="pt-2 border-t border-white/10">
                     <Field label="مبلغ نهایی اعلامی به مشتری (تومان)">
                       <div className="flex gap-2">
-                        <input
-                          type="number"
+                        <NumberInput
                           value={quotedPrice}
-                          onChange={(e) => setQuotedPrice(e.target.value)}
-                          placeholder="مثلاً: 18500000"
+                          onChange={setQuotedPrice}
+                          min={0}
+                          groupThousands
+                          placeholder="مثلاً: ۱۸,۵۰۰,۰۰۰"
                           className={inputCls}
                         />
                         <button
                           type="button"
                           onClick={() => {
-                            const price = Number(quotedPrice) || 0;
+                            const price = Math.max(0, Math.round(quotedPrice) || 0);
+                            if (price <= 0) {
+                              window.alert('مبلغ نهایی معتبر را وارد کنید.');
+                              return;
+                            }
                             const updated = {
                               ...selected,
                               subtotal: price,

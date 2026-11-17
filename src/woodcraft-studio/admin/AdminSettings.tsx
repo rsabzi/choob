@@ -14,7 +14,7 @@ import {
   Database,
 } from 'lucide-react';
 import type { SiteSettings, StudioDB } from '../store/types';
-import { Field, downloadFile, inputCls } from './ui';
+import { Field, NumberInput, downloadFile, inputCls } from './ui';
 
 interface AdminSettingsProps {
   settings: SiteSettings;
@@ -43,7 +43,14 @@ export const AdminSettings: React.FC<AdminSettingsProps> = ({
     setDraft((prev) => ({ ...prev, [key]: value }));
 
   const save = () => {
-    onSaveSettings(draft);
+    const safeDraft: SiteSettings = {
+      ...draft,
+      shippingCost: Math.max(0, Math.round(draft.shippingCost) || 0),
+      freeShippingThreshold: Math.max(0, Math.round(draft.freeShippingThreshold) || 0),
+      giftBoxPrice: Math.max(0, Math.round(draft.giftBoxPrice) || 0),
+    };
+    setDraft(safeDraft);
+    onSaveSettings(safeDraft);
     setSavedFlash(true);
     setTimeout(() => setSavedFlash(false), 2500);
   };
@@ -149,9 +156,9 @@ export const AdminSettings: React.FC<AdminSettingsProps> = ({
           <Truck className="w-4 h-4 text-[#D49B54]" /> ارسال و مبالغ عمومی
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Field label="هزینه ارسال (تومان)"><input type="number" className={inputCls} value={draft.shippingCost} onChange={(e) => set('shippingCost', Number(e.target.value) || 0)} /></Field>
-          <Field label="سقف ارسال رایگان (تومان)"><input type="number" className={inputCls} value={draft.freeShippingThreshold} onChange={(e) => set('freeShippingThreshold', Number(e.target.value) || 0)} /></Field>
-          <Field label="قیمت بسته‌بندی کادویی (تومان)"><input type="number" className={inputCls} value={draft.giftBoxPrice} onChange={(e) => set('giftBoxPrice', Number(e.target.value) || 0)} /></Field>
+          <Field label="هزینه ارسال (تومان)"><NumberInput className={inputCls} value={draft.shippingCost} onChange={(value) => set('shippingCost', value)} min={0} groupThousands /></Field>
+          <Field label="سقف ارسال رایگان (تومان)"><NumberInput className={inputCls} value={draft.freeShippingThreshold} onChange={(value) => set('freeShippingThreshold', value)} min={0} groupThousands /></Field>
+          <Field label="قیمت بسته‌بندی کادویی (تومان)"><NumberInput className={inputCls} value={draft.giftBoxPrice} onChange={(value) => set('giftBoxPrice', value)} min={0} groupThousands /></Field>
         </div>
         <button type="button" onClick={save} className="mt-5 btn-honey-gold px-6 py-3 rounded-xl text-xs font-black flex items-center gap-2 cursor-pointer">
           <Save className="w-4 h-4" />
