@@ -24,7 +24,7 @@ import {
 import { uid } from '../store/StoreContext';
 import type { Coupon, FaqItem, ServiceItem, Testimonial } from '../store/types';
 import { SERVICE_ICON_OPTIONS, ServiceIcon } from '../components/ServicesSection';
-import { AdminModal, Field, Toggle, inputCls } from './ui';
+import { AdminModal, Field, NumberInput, Toggle, inputCls } from './ui';
 
 const IMAGE_PRESETS = [
   '/images/clock-walnut-brass.jpg',
@@ -187,10 +187,10 @@ const ProductsManager: React.FC<{
               <input className={inputCls} value={editing.categoryLabel} onChange={(e) => setEditing({ ...editing, categoryLabel: e.target.value })} />
             </Field>
             <Field label="قیمت پایه (تومان)">
-              <input type="number" className={inputCls} value={editing.basePrice} onChange={(e) => setEditing({ ...editing, basePrice: Number(e.target.value) || 0 })} />
+              <NumberInput className={inputCls} value={editing.basePrice} onChange={(basePrice) => setEditing({ ...editing, basePrice })} min={0} groupThousands placeholder="مثلاً: ۱۸,۵۰۰,۰۰۰" />
             </Field>
             <Field label="زمان ساخت (ساعت کار دست)">
-              <input type="number" className={inputCls} value={editing.craftHours} onChange={(e) => setEditing({ ...editing, craftHours: Number(e.target.value) || 0 })} />
+              <NumberInput className={inputCls} value={editing.craftHours} onChange={(craftHours) => setEditing({ ...editing, craftHours })} min={0} />
             </Field>
             <Field label="ابعاد محصول">
               <input className={inputCls} value={editing.dimensions} onChange={(e) => setEditing({ ...editing, dimensions: e.target.value })} placeholder="مثلاً: قطر ۳۸ سانتی‌متر × ضخامت ۲.۸" />
@@ -310,7 +310,17 @@ const ProductsManager: React.FC<{
                 window.alert('عنوان محصول را وارد کنید.');
                 return;
               }
-              onSave({ ...editing, highlights: linesToArray(highlightsText) });
+              const safeBasePrice = Math.max(0, Math.round(editing.basePrice) || 0);
+              if (safeBasePrice <= 0) {
+                window.alert('قیمت پایه محصول را به‌درستی وارد کنید.');
+                return;
+              }
+              onSave({
+                ...editing,
+                basePrice: safeBasePrice,
+                craftHours: Math.max(0, Math.round(editing.craftHours) || 0),
+                highlights: linesToArray(highlightsText),
+              });
               setEditing(null);
             }}
             className="mt-5 w-full btn-honey-gold py-3.5 rounded-xl text-sm font-black cursor-pointer"
@@ -490,7 +500,7 @@ const MaterialsManager: React.FC<{
         <AdminModal title="ویرایش گونه چوب" onClose={() => setWoodEdit(null)}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Field label="نام چوب"><input className={inputCls} value={woodEdit.name} onChange={(e) => setWoodEdit({ ...woodEdit, name: e.target.value })} /></Field>
-            <Field label="ضریب قیمت (۱ = قیمت پایه)"><input type="number" step="0.01" className={inputCls} value={woodEdit.priceMultiplier} onChange={(e) => setWoodEdit({ ...woodEdit, priceMultiplier: Number(e.target.value) || 1 })} /></Field>
+            <Field label="ضریب قیمت (۱ = قیمت پایه)"><NumberInput className={inputCls} value={woodEdit.priceMultiplier} onChange={(priceMultiplier) => setWoodEdit({ ...woodEdit, priceMultiplier })} decimal fallback={1} min={0.01} placeholder="مثلاً: ۱.۲۵ یا 0.85" /></Field>
             <Field label="زیرعنوان" className="sm:col-span-2"><input className={inputCls} value={woodEdit.subtitle} onChange={(e) => setWoodEdit({ ...woodEdit, subtitle: e.target.value })} /></Field>
             <Field label="خاستگاه و فرآوری"><input className={inputCls} value={woodEdit.origin} onChange={(e) => setWoodEdit({ ...woodEdit, origin: e.target.value })} /></Field>
             <Field label="مقاومت و ماندگاری"><input className={inputCls} value={woodEdit.durability} onChange={(e) => setWoodEdit({ ...woodEdit, durability: e.target.value })} /></Field>
@@ -499,7 +509,7 @@ const MaterialsManager: React.FC<{
             <Field label="رنگ لهجه (Hex)"><input dir="ltr" className={`${inputCls} text-left`} value={woodEdit.accentHex} onChange={(e) => setWoodEdit({ ...woodEdit, accentHex: e.target.value })} /></Field>
           </div>
           <div className="mt-4 h-14 rounded-xl border border-white/20" style={{ background: woodEdit.swatchGradient }} />
-          <button type="button" onClick={() => { props.onSaveWood(woodEdit); setWoodEdit(null); }} className="mt-5 w-full btn-honey-gold py-3 rounded-xl text-xs font-black cursor-pointer">ذخیره چوب</button>
+          <button type="button" onClick={() => { const safeMultiplier = Number.isFinite(woodEdit.priceMultiplier) && woodEdit.priceMultiplier > 0 ? woodEdit.priceMultiplier : 1; props.onSaveWood({ ...woodEdit, priceMultiplier: safeMultiplier }); setWoodEdit(null); }} className="mt-5 w-full btn-honey-gold py-3 rounded-xl text-xs font-black cursor-pointer">ذخیره چوب</button>
         </AdminModal>
       )}
 
@@ -509,11 +519,11 @@ const MaterialsManager: React.FC<{
             <Field label="نام پوشش"><input className={inputCls} value={finishEdit.name} onChange={(e) => setFinishEdit({ ...finishEdit, name: e.target.value })} /></Field>
             <Field label="توضیح"><textarea rows={2} className={inputCls} value={finishEdit.description} onChange={(e) => setFinishEdit({ ...finishEdit, description: e.target.value })} /></Field>
             <div className="grid grid-cols-2 gap-4">
-              <Field label="هزینه اضافه (تومان)"><input type="number" className={inputCls} value={finishEdit.extraCost} onChange={(e) => setFinishEdit({ ...finishEdit, extraCost: Number(e.target.value) || 0 })} /></Field>
+              <Field label="هزینه اضافه (تومان)"><NumberInput className={inputCls} value={finishEdit.extraCost} onChange={(extraCost) => setFinishEdit({ ...finishEdit, extraCost })} min={0} groupThousands /></Field>
               <Field label="برچسب (Badge)"><input className={inputCls} value={finishEdit.badge} onChange={(e) => setFinishEdit({ ...finishEdit, badge: e.target.value })} /></Field>
             </div>
           </div>
-          <button type="button" onClick={() => { props.onSaveFinish(finishEdit); setFinishEdit(null); }} className="mt-5 w-full btn-honey-gold py-3 rounded-xl text-xs font-black cursor-pointer">ذخیره پوشش</button>
+          <button type="button" onClick={() => { props.onSaveFinish({ ...finishEdit, extraCost: Math.max(0, Math.round(finishEdit.extraCost) || 0) }); setFinishEdit(null); }} className="mt-5 w-full btn-honey-gold py-3 rounded-xl text-xs font-black cursor-pointer">ذخیره پوشش</button>
         </AdminModal>
       )}
 
@@ -522,9 +532,9 @@ const MaterialsManager: React.FC<{
           <div className="space-y-4">
             <Field label="نام گزینه"><input className={inputCls} value={sizeEdit.name} onChange={(e) => setSizeEdit({ ...sizeEdit, name: e.target.value })} /></Field>
             <Field label="توضیح ابعاد"><input className={inputCls} value={sizeEdit.dimensionsLabel} onChange={(e) => setSizeEdit({ ...sizeEdit, dimensionsLabel: e.target.value })} /></Field>
-            <Field label="مبلغ اضافه (تومان)"><input type="number" className={inputCls} value={sizeEdit.priceDelta} onChange={(e) => setSizeEdit({ ...sizeEdit, priceDelta: Number(e.target.value) || 0 })} /></Field>
+            <Field label="مبلغ اضافه (تومان)"><NumberInput className={inputCls} value={sizeEdit.priceDelta} onChange={(priceDelta) => setSizeEdit({ ...sizeEdit, priceDelta })} min={0} groupThousands /></Field>
           </div>
-          <button type="button" onClick={() => { props.onSaveSize(sizeEdit); setSizeEdit(null); }} className="mt-5 w-full btn-honey-gold py-3 rounded-xl text-xs font-black cursor-pointer">ذخیره ابعاد</button>
+          <button type="button" onClick={() => { props.onSaveSize({ ...sizeEdit, priceDelta: Math.max(0, Math.round(sizeEdit.priceDelta) || 0) }); setSizeEdit(null); }} className="mt-5 w-full btn-honey-gold py-3 rounded-xl text-xs font-black cursor-pointer">ذخیره ابعاد</button>
         </AdminModal>
       )}
     </div>
@@ -739,13 +749,13 @@ const CouponsManager: React.FC<{
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <Field label="کد تخفیف (لاتین)"><input dir="ltr" className={`${inputCls} text-left font-mono`} value={editing.code} onChange={(e) => setEditing({ ...editing, code: e.target.value.toUpperCase() })} placeholder="ORSI10" /></Field>
-              <Field label="درصد تخفیف"><input type="number" min={1} max={90} className={inputCls} value={editing.percent} onChange={(e) => setEditing({ ...editing, percent: Math.min(90, Math.max(1, Number(e.target.value) || 1)) })} /></Field>
+              <Field label="درصد تخفیف"><NumberInput className={inputCls} value={editing.percent} onChange={(percent) => setEditing({ ...editing, percent })} fallback={1} min={1} max={90} /></Field>
             </div>
-            <Field label="حداقل مبلغ سفارش (تومان — ۰ یعنی بدون شرط)"><input type="number" className={inputCls} value={editing.minTotal} onChange={(e) => setEditing({ ...editing, minTotal: Number(e.target.value) || 0 })} /></Field>
+            <Field label="حداقل مبلغ سفارش (تومان — ۰ یعنی بدون شرط)"><NumberInput className={inputCls} value={editing.minTotal} onChange={(minTotal) => setEditing({ ...editing, minTotal })} min={0} groupThousands /></Field>
             <Field label="توضیح داخلی"><input className={inputCls} value={editing.description} onChange={(e) => setEditing({ ...editing, description: e.target.value })} placeholder="مثلاً: کمپین اولین خرید" /></Field>
             <Toggle checked={editing.active} onChange={(v) => setEditing({ ...editing, active: v })} label="فعال" />
           </div>
-          <button type="button" onClick={() => { if (!editing.code.trim()) { window.alert('کد تخفیف را وارد کنید.'); return; } onSave(editing); setEditing(null); }} className="mt-5 w-full btn-honey-gold py-3 rounded-xl text-xs font-black cursor-pointer">ذخیره کد تخفیف</button>
+          <button type="button" onClick={() => { if (!editing.code.trim()) { window.alert('کد تخفیف را وارد کنید.'); return; } onSave({ ...editing, code: editing.code.trim().toUpperCase(), percent: Math.min(90, Math.max(1, Math.round(editing.percent) || 1)), minTotal: Math.max(0, Math.round(editing.minTotal) || 0) }); setEditing(null); }} className="mt-5 w-full btn-honey-gold py-3 rounded-xl text-xs font-black cursor-pointer">ذخیره کد تخفیف</button>
         </AdminModal>
       )}
     </div>
