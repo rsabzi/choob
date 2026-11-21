@@ -114,10 +114,6 @@ const LoginScreen: React.FC = () => {
           <button type="submit" className="w-full btn-honey-gold py-3.5 rounded-2xl text-sm font-black cursor-pointer">
             ورود به پنل مدیریت
           </button>
-          <p className="text-[11px] text-[#8A7968] text-center leading-relaxed">
-            رمز پیش‌فرض اولیه: <span className="font-mono text-[#E5B26D]" dir="ltr">admin123</span>
-            <br />پس از ورود، از بخش «تنظیمات سایت» آن را تغییر دهید.
-          </p>
           <a href="#/" className="block text-center text-xs text-[#C8B9A6] hover:text-[#E5B26D]">
             بازگشت به مشاهده سایت
           </a>

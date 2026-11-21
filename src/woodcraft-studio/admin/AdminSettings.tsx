@@ -182,7 +182,7 @@ export const AdminSettings: React.FC<AdminSettingsProps> = ({
         {passwordMsg && <p className="text-xs text-[#7FCB9B] mt-3">{passwordMsg}</p>}
         <p className="text-[11px] text-[#8A7968] mt-3 flex items-center gap-1.5">
           <Store className="w-3.5 h-3.5" />
-          رمز پیش‌فرض اولیه «admin123» است؛ پس از اولین ورود حتماً آن را تغییر دهید.
+          برای امنیت پنل، از یک رمز عبور قوی و اختصاصی استفاده کنید و آن را در اختیار دیگران قرار ندهید.
         </p>
       </section>
 
