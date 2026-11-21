@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Hammer,
   Gift,
@@ -59,6 +59,20 @@ export const CustomOrderStudio: React.FC<CustomOrderStudioProps> = ({
   const [engravingFont, setEngravingFont] = useState<'nastaaliq' | 'modern' | 'minimal-latin'>('nastaaliq');
   const [giftPackaging, setGiftPackaging] = useState(false);
   const [quantity, setQuantity] = useState(1);
+  const [configurationError, setConfigurationError] = useState('');
+  const [isInView, setIsInView] = useState(false);
+  const sectionRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsInView(entry.isIntersecting),
+      { rootMargin: '-18% 0px -42% 0px', threshold: 0.04 }
+    );
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
 
   // Sync default wood when selected product changes
   useEffect(() => {
@@ -79,6 +93,12 @@ export const CustomOrderStudio: React.FC<CustomOrderStudioProps> = ({
   const totalPrice = unitPrice * quantity;
 
   const handleBuildOrder = (openDrawer: boolean) => {
+    if (size.id === 'custom' && !customDimensionsText.trim()) {
+      setConfigurationError('برای ابعاد سفارشی، اندازه دقیق موردنظرتان را بنویسید تا ساخت دقیق انجام شود.');
+      window.setTimeout(() => document.getElementById('custom-dimensions-input')?.focus(), 50);
+      return;
+    }
+    setConfigurationError('');
     const newItem: OrderCartItem = {
       cartItemId: `${selectedProduct.id}-${woodId}-${finish.id}-${Date.now()}`,
       productId: selectedProduct.id,
@@ -100,7 +120,9 @@ export const CustomOrderStudio: React.FC<CustomOrderStudioProps> = ({
 
   return (
     <section
+      ref={sectionRef}
       id="customizer"
+      aria-labelledby="customizer-title"
       className="relative py-16 sm:py-20 md:py-24 px-4 sm:px-6 lg:px-8 scroll-mt-20 overflow-x-clip"
     >
       {/* Ambient Workshop Backlight */}
@@ -116,8 +138,8 @@ export const CustomOrderStudio: React.FC<CustomOrderStudioProps> = ({
             <Wand2 className="w-4 h-4" />
             <span>استودیو طراحی و شخصی‌سازی آنلاین</span>
           </div>
-          <h2 className="text-2xl sm:text-4xl font-black text-[#F7F2EB] tracking-tight">
-            اثر چوبی اختصاصی خودتان را بسازید
+          <h2 id="customizer-title" className="text-2xl sm:text-4xl font-black text-[#F7F2EB] tracking-tight">
+            ساخت و سفارش آنلاین دست‌سازه چوبی اختصاصی
           </h2>
           <p className="text-sm sm:text-base text-[#C8B9A6] mt-2.5">
             نوع چوب، پوشش گیاهی، ابعاد و متن حکاکی لیزری را انتخاب کنید؛ قیمت و پیش‌نمایش
@@ -129,8 +151,22 @@ export const CustomOrderStudio: React.FC<CustomOrderStudioProps> = ({
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Right 7 Columns: Step-by-Step Interactive Controls */}
           <div className="lg:col-span-7 space-y-6">
+            <nav aria-label="مراحل شخصی‌سازی سفارش" className="grid grid-cols-4 gap-1.5 sm:gap-2">
+              {[
+                ['۱', 'محصول', '#custom-step-product'],
+                ['۲', 'چوب', '#custom-step-wood'],
+                ['۳', 'پوشش و ابعاد', '#custom-step-options'],
+                ['۴', 'حکاکی', '#custom-step-engraving'],
+              ].map(([number, label, href]) => (
+                <a key={href} href={href} className="glass-panel rounded-xl px-2 py-2.5 text-center text-[10px] sm:text-xs font-bold text-[#C8B9A6] hover:text-[#F7F2EB] hover:border-[#D49B54]/60">
+                  <span className="block text-[#D49B54] font-black">{number}</span>
+                  {label}
+                </a>
+              ))}
+            </nav>
+
             {/* Step 1: Select Base Product */}
-            <div className="glass-panel rounded-[24px] p-4 sm:p-6">
+            <div id="custom-step-product" className="glass-panel rounded-[24px] p-4 sm:p-6 scroll-mt-32">
               <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
                 <h3 className="text-base sm:text-lg font-extrabold text-[#F7F2EB] flex items-center gap-2.5">
                   <span className="w-7 h-7 rounded-full bg-[#D49B54] text-[#120E0A] text-xs font-black flex items-center justify-center tabular-nums-fa">
@@ -179,7 +215,7 @@ export const CustomOrderStudio: React.FC<CustomOrderStudioProps> = ({
             </div>
 
             {/* Step 2: Select Natural Wood Species */}
-            <div className="glass-panel rounded-[24px] p-4 sm:p-6">
+            <div id="custom-step-wood" className="glass-panel rounded-[24px] p-4 sm:p-6 scroll-mt-32">
               <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
                 <h3 className="text-base sm:text-lg font-extrabold text-[#F7F2EB] flex items-center gap-2.5">
                   <span className="w-7 h-7 rounded-full bg-[#D49B54] text-[#120E0A] text-xs font-black flex items-center justify-center tabular-nums-fa">
@@ -236,7 +272,7 @@ export const CustomOrderStudio: React.FC<CustomOrderStudioProps> = ({
             </div>
 
             {/* Step 3: Select Protective Finish & Dimensions */}
-            <div className="glass-panel rounded-[24px] p-4 sm:p-6 space-y-6">
+            <div id="custom-step-options" className="glass-panel rounded-[24px] p-4 sm:p-6 space-y-6 scroll-mt-32">
               <div>
                 <h3 className="text-base sm:text-lg font-extrabold text-[#F7F2EB] flex items-center gap-2.5 mb-4">
                   <span className="w-7 h-7 rounded-full bg-[#D49B54] text-[#120E0A] text-xs font-black flex items-center justify-center tabular-nums-fa">
@@ -323,19 +359,27 @@ export const CustomOrderStudio: React.FC<CustomOrderStudioProps> = ({
                 {size.id === 'custom' && (
                   <div className="mt-3">
                     <input
+                      id="custom-dimensions-input"
                       type="text"
+                      aria-invalid={Boolean(configurationError)}
+                      aria-describedby={configurationError ? 'custom-dimensions-error' : undefined}
                       value={customDimensionsText}
-                      onChange={(e) => setCustomDimensionsText(e.target.value)}
+                      onChange={(e) => { setCustomDimensionsText(e.target.value); if (configurationError) setConfigurationError(''); }}
                       placeholder="مثلاً: طول ۳۵ سانتی‌متر، عرض ۱۵ سانتی‌متر (مناسب لپ‌تاپ ۱۶ اینچ)"
                       className="w-full glass-input rounded-xl px-4 py-3 text-xs sm:text-sm text-[#F7F2EB] placeholder-[#8A7968]"
                     />
+                    {configurationError && (
+                      <p id="custom-dimensions-error" role="alert" className="mt-2 text-[11px] font-bold text-[#E87F7F]">
+                        {configurationError}
+                      </p>
+                    )}
                   </div>
                 )}
               </div>
             </div>
 
             {/* Step 4: Laser Engraving & Gift Box */}
-            <div className="glass-panel rounded-[24px] p-4 sm:p-6 space-y-5">
+            <div id="custom-step-engraving" className="glass-panel rounded-[24px] p-4 sm:p-6 space-y-5 scroll-mt-32">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <h3 className="text-base sm:text-lg font-extrabold text-[#F7F2EB] flex items-center gap-2.5">
                   <span className="w-7 h-7 rounded-full bg-[#D49B54] text-[#120E0A] text-xs font-black flex items-center justify-center tabular-nums-fa">
@@ -522,6 +566,7 @@ export const CustomOrderStudio: React.FC<CustomOrderStudioProps> = ({
                   <button
                     type="button"
                     onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                    aria-label="کاهش تعداد سفارش"
                     className="w-8 h-8 rounded-lg hover:bg-white/10 text-[#F7F2EB] font-bold cursor-pointer"
                   >
                     −
@@ -532,6 +577,7 @@ export const CustomOrderStudio: React.FC<CustomOrderStudioProps> = ({
                   <button
                     type="button"
                     onClick={() => setQuantity((q) => q + 1)}
+                    aria-label="افزایش تعداد سفارش"
                     className="w-8 h-8 rounded-lg hover:bg-white/10 text-[#F7F2EB] font-bold cursor-pointer"
                   >
                     +
@@ -579,6 +625,26 @@ export const CustomOrderStudio: React.FC<CustomOrderStudioProps> = ({
           </div>
         </div>
       </div>
+
+      {isInView && (
+        <div className="fixed inset-x-3 bottom-24 min-[420px]:bottom-[6.5rem] z-40 lg:hidden animate-fadeIn">
+          <div className="glass-panel-elevated rounded-2xl p-3 flex items-center gap-3 border-[#D49B54]/50 shadow-2xl">
+            <div className="flex-1 min-w-0">
+              <span className="block text-[10px] text-[#C8B9A6]">مبلغ سفارش اختصاصی شما</span>
+              <strong className="block text-sm font-black text-[#F7F2EB] tabular-nums-fa truncate">
+                {formatTomans(totalPrice)} تومان
+              </strong>
+            </div>
+            <button
+              type="button"
+              onClick={() => handleBuildOrder(true)}
+              className="btn-honey-gold px-4 py-3 rounded-xl text-xs font-black shrink-0 cursor-pointer"
+            >
+              ثبت سفارش
+            </button>
+          </div>
+        </div>
+      )}
     </section>
   );
 };

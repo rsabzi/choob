@@ -7,6 +7,7 @@ import {
   TreePine,
   MessageSquareHeart,
   PackageSearch,
+  Search,
   Layers,
   CircleHelp,
   PhoneCall,
@@ -22,6 +23,7 @@ interface GlassHeaderProps {
   onOpenCart: () => void;
   onJumpToCustomizer: () => void;
   onOpenTracking: () => void;
+  onSearchProducts?: () => void;
 }
 
 const NAV_LINKS = [
@@ -44,6 +46,7 @@ export const GlassHeader: React.FC<GlassHeaderProps> = ({
   onOpenCart,
   onJumpToCustomizer,
   onOpenTracking,
+  onSearchProducts,
 }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -57,7 +60,7 @@ export const GlassHeader: React.FC<GlassHeaderProps> = ({
           <div className="flex items-center justify-between gap-2">
             {/* Studio Brand — never collapses */}
             <a
-              href="#"
+              href="#top"
               className="flex items-center gap-2.5 sm:gap-3 group focus:outline-none min-w-0 xl:shrink-0"
             >
               <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-gradient-to-br from-[#E5B26D] via-[#B86B35] to-[#4A2F1D] p-[1.5px] shadow-lg shadow-[#D49B54]/20 shrink-0">
@@ -90,6 +93,17 @@ export const GlassHeader: React.FC<GlassHeaderProps> = ({
 
             {/* Actions */}
             <div className="flex items-center gap-2 shrink-0">
+              {onSearchProducts && (
+                <button
+                  type="button"
+                  onClick={onSearchProducts}
+                  className="glass-pill hover:border-[#D49B54]/50 text-[#F7F2EB] w-10 h-10 rounded-full hidden md:flex items-center justify-center transition-all cursor-pointer"
+                  title="جستجوی محصول چوبی"
+                  aria-label="جستجوی محصول در ویترین"
+                >
+                  <Search className="w-4 h-4 text-[#D49B54]" />
+                </button>
+              )}
               {/* Order tracking: icon-only on xl, full label on 2xl+ */}
               <button
                 type="button"
@@ -104,7 +118,7 @@ export const GlassHeader: React.FC<GlassHeaderProps> = ({
                 type="button"
                 onClick={onOpenCart}
                 className="relative glass-pill hover:border-[#D49B54]/50 text-[#F7F2EB] px-3 py-2.5 rounded-full flex items-center gap-2 transition-all cursor-pointer"
-                aria-label="مشاهده لیست سفارش‌ها"
+                aria-label={`مشاهده سبد سفارش، ${toPersianDigits(cartCount)} کالا`}
               >
                 <ShoppingBag className="w-4 h-4 text-[#D49B54]" />
                 <span className="text-sm font-semibold hidden sm:inline xl:hidden">
@@ -131,6 +145,7 @@ export const GlassHeader: React.FC<GlassHeaderProps> = ({
                 className="xl:hidden w-10 h-10 rounded-full glass-pill flex items-center justify-center text-[#F7F2EB] cursor-pointer shrink-0"
                 aria-label="باز کردن منو"
                 aria-expanded={mobileOpen}
+                aria-controls="mobile-store-menu"
               >
                 {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </button>
@@ -139,7 +154,7 @@ export const GlassHeader: React.FC<GlassHeaderProps> = ({
 
           {/* Mobile / Tablet Menu */}
           {mobileOpen && (
-            <div className="xl:hidden mt-3 pt-3 border-t border-[#FFF0DC]/10 grid grid-cols-1 min-[420px]:grid-cols-2 gap-2 animate-fadeIn">
+            <div id="mobile-store-menu" className="xl:hidden mt-3 pt-3 border-t border-[#FFF0DC]/10 grid grid-cols-1 min-[420px]:grid-cols-2 gap-2 animate-fadeIn">
               {NAV_LINKS.map((link) => (
                 <a
                   key={link.href}
@@ -151,6 +166,19 @@ export const GlassHeader: React.FC<GlassHeaderProps> = ({
                   {link.label}
                 </a>
               ))}
+              {onSearchProducts && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMobileOpen(false);
+                    onSearchProducts();
+                  }}
+                  className="px-3 py-2.5 rounded-xl text-xs font-semibold text-[#F7F2EB] bg-[#FFF4E5]/8 border border-[#D49B54]/40 flex items-center gap-2 cursor-pointer"
+                >
+                  <Search className="w-4 h-4 text-[#D49B54]" />
+                  جستجوی سریع محصول
+                </button>
+              )}
               <button
                 type="button"
                 onClick={() => {

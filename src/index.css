@@ -22,6 +22,7 @@
     background-color: #120E0A;
     color: #F7F2EB;
     scroll-behavior: smooth;
+    scroll-padding-top: 7rem;
   }
 
   body {
@@ -238,6 +239,40 @@ input[type='number'] {
 }
 .bottom-safe {
   bottom: max(1.5rem, env(safe-area-inset-bottom));
+}
+
+/* Accessible focus state for keyboard and switch-control users */
+:focus-visible {
+  outline: 3px solid rgba(245, 208, 138, 0.95);
+  outline-offset: 3px;
+}
+
+::placeholder {
+  opacity: 0.78;
+}
+
+@media (hover: none) {
+  .glass-card-interactive:hover {
+    transform: none;
+  }
+
+  .btn-honey-gold:hover {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 /* Slightly tighter display type on very small phones */

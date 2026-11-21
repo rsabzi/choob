@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Clock,
   Laptop,
@@ -12,6 +12,7 @@ import {
   Check,
   Search,
   SearchX,
+  X,
 } from 'lucide-react';
 import {
   CATEGORIES,
@@ -29,6 +30,7 @@ interface PortfolioGalleryProps {
   onInspectProduct: (product: WoodProduct) => void;
   onCustomizeProduct: (product: WoodProduct) => void;
   onQuickAddToOrder: (product: WoodProduct) => void;
+  categoryRequest?: { category: ProductCategory; nonce: number } | null;
 }
 
 type SortMode = 'featured' | 'cheapest' | 'expensive' | 'fastest';
@@ -39,12 +41,20 @@ export const PortfolioGallery: React.FC<PortfolioGalleryProps> = ({
   onInspectProduct,
   onCustomizeProduct,
   onQuickAddToOrder,
+  categoryRequest,
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<ProductCategory>('all');
   const [selectedWoodFilter, setSelectedWoodFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortMode, setSortMode] = useState<SortMode>('featured');
   const [justAddedId, setJustAddedId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!categoryRequest) return;
+    setSelectedCategory(categoryRequest.category);
+    setSelectedWoodFilter('all');
+    setSearchQuery('');
+  }, [categoryRequest]);
 
   const categoriesWithCount = useMemo(
     () =>
@@ -117,7 +127,7 @@ export const PortfolioGallery: React.FC<PortfolioGalleryProps> = ({
   };
 
   return (
-    <section id="portfolio" className="relative py-16 sm:py-20 md:py-24 px-4 sm:px-6 lg:px-8 scroll-mt-24 overflow-x-clip">
+    <section id="portfolio" aria-labelledby="portfolio-title" className="relative py-16 sm:py-20 md:py-24 px-4 sm:px-6 lg:px-8 scroll-mt-24 overflow-x-clip">
       <div className="pointer-events-none absolute top-1/3 left-1/2 -translate-x-1/2 w-[620px] h-[340px] rounded-full bg-[#D49B54]/10 blur-[140px]" />
 
       <div className="max-w-[1360px] mx-auto">
@@ -128,8 +138,8 @@ export const PortfolioGallery: React.FC<PortfolioGalleryProps> = ({
               <Sparkles className="w-3.5 h-3.5" />
               <span>کلکسیون دست‌سازه‌های تزیینی و کاربردی</span>
             </div>
-            <h2 className="text-2xl sm:text-4xl font-black text-[#F7F2EB] tracking-tight">
-              ویترین نمونه‌کارهای چوبی کارگاه
+            <h2 id="portfolio-title" className="text-2xl sm:text-4xl font-black text-[#F7F2EB] tracking-tight">
+              خرید دست‌سازه‌های چوبی سفارشی و نمونه‌کارهای کارگاه
             </h2>
             <p className="text-sm sm:text-base text-[#C8B9A6] mt-2 max-w-[62ch]">
               هر اثر با انتخاب دقیق رگه‌های چوب طبیعی و پرداخت دست‌ساز تولید می‌شود. می‌توانید
@@ -146,6 +156,7 @@ export const PortfolioGallery: React.FC<PortfolioGalleryProps> = ({
             <button
               type="button"
               onClick={() => setSelectedWoodFilter('all')}
+              aria-pressed={selectedWoodFilter === 'all'}
               className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                 selectedWoodFilter === 'all'
                   ? 'bg-[#D49B54] text-[#120E0A] font-bold shadow'
@@ -161,6 +172,7 @@ export const PortfolioGallery: React.FC<PortfolioGalleryProps> = ({
                   key={wood.id}
                   type="button"
                   onClick={() => setSelectedWoodFilter(wood.id)}
+                  aria-pressed={active}
                   className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
                     active
                       ? 'bg-[#FFF4E5]/20 text-[#F7F2EB] border border-[#D49B54]'
@@ -182,13 +194,26 @@ export const PortfolioGallery: React.FC<PortfolioGalleryProps> = ({
         <div className="glass-panel rounded-2xl p-3 mb-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           <div className="relative flex-1">
             <Search className="w-4 h-4 text-[#8A7968] absolute right-3.5 top-1/2 -translate-y-1/2" />
+            <label htmlFor="portfolio-search" className="sr-only">جستجوی محصول چوبی</label>
             <input
+              id="portfolio-search"
               type="text"
+              autoComplete="off"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="جستجو در نمونه‌کارها؛ مثلاً: ساعت، استند، گردو…"
-              className="w-full glass-input rounded-xl pr-10 pl-3 py-2.5 text-xs sm:text-sm text-[#F7F2EB]"
+              className="w-full glass-input rounded-xl pr-10 pl-10 py-2.5 text-xs sm:text-sm text-[#F7F2EB]"
             />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="absolute left-2.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/8 flex items-center justify-center text-[#C8B9A6] hover:text-[#F7F2EB] cursor-pointer"
+                aria-label="پاک کردن جستجو"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
           <select
             value={sortMode}
@@ -201,7 +226,7 @@ export const PortfolioGallery: React.FC<PortfolioGalleryProps> = ({
             <option value="expensive">گران‌ترین اول</option>
             <option value="fastest">سریع‌ترین ساخت</option>
           </select>
-          <span className="text-xs text-[#C8B9A6] px-1 whitespace-nowrap">
+          <span className="text-xs text-[#C8B9A6] px-1 whitespace-nowrap" role="status" aria-live="polite">
             {toPersianDigits(filteredProducts.length)} اثر پیدا شد
           </span>
         </div>
@@ -215,6 +240,7 @@ export const PortfolioGallery: React.FC<PortfolioGalleryProps> = ({
                 key={cat.id}
                 type="button"
                 onClick={() => setSelectedCategory(cat.id)}
+                aria-pressed={isActive}
                 className={`px-4 sm:px-5 py-3 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2.5 shrink-0 transition-all cursor-pointer ${
                   isActive
                     ? 'btn-honey-gold shadow-lg'
@@ -266,6 +292,8 @@ export const PortfolioGallery: React.FC<PortfolioGalleryProps> = ({
                 <article
                   key={product.id}
                   className="glass-card-interactive rounded-[22px] p-5 flex flex-col justify-between group"
+                  itemScope
+                  itemType="https://schema.org/Product"
                 >
                   <div>
                     <div
@@ -274,9 +302,12 @@ export const PortfolioGallery: React.FC<PortfolioGalleryProps> = ({
                     >
                       <img
                         src={product.image}
-                        alt={product.title}
+                        alt={`${product.title}؛ دست‌سازه چوب طبیعی سفارشی`} itemProp="image"
                         className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
                         loading="lazy"
+                        decoding="async"
+                        width={960}
+                        height={768}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-[#120E0A]/85 via-transparent to-black/20" />
 
@@ -320,13 +351,17 @@ export const PortfolioGallery: React.FC<PortfolioGalleryProps> = ({
                       </div>
                     </div>
 
-                    <h3
-                      onClick={() => onInspectProduct(product)}
-                      className="text-lg font-extrabold text-[#F7F2EB] group-hover:text-[#E5B26D] transition-colors cursor-pointer leading-snug"
-                    >
-                      {product.title}
+                    <h3 className="text-lg font-extrabold text-[#F7F2EB] group-hover:text-[#E5B26D] transition-colors leading-snug">
+                      <button
+                        type="button"
+                        onClick={() => onInspectProduct(product)}
+                        className="text-right cursor-pointer"
+                        itemProp="name"
+                      >
+                        {product.title}
+                      </button>
                     </h3>
-                    <p className="text-xs sm:text-sm text-[#C8B9A6] mt-1.5 line-clamp-2 leading-relaxed">
+                    <p className="text-xs sm:text-sm text-[#C8B9A6] mt-1.5 line-clamp-2 leading-relaxed" itemProp="description">
                       {product.subtitle}
                     </p>
 
@@ -356,6 +391,12 @@ export const PortfolioGallery: React.FC<PortfolioGalleryProps> = ({
                         {formatTomans(product.basePrice)}{' '}
                         <span className="text-xs font-medium text-[#D49B54]">تومان</span>
                       </div>
+                      <span className="text-[10px] text-[#8A7968]">قیمت شروع؛ نهایی در شخصی‌سازی مشخص می‌شود</span>
+                      <span itemProp="offers" itemScope itemType="https://schema.org/Offer" className="hidden">
+                        <meta itemProp="priceCurrency" content="IRR" />
+                        <meta itemProp="price" content={String(product.basePrice * 10)} />
+                        <meta itemProp="availability" content="https://schema.org/MadeToOrder" />
+                      </span>
                     </div>
 
                     <div className="flex items-center gap-2 flex-wrap">
@@ -368,6 +409,7 @@ export const PortfolioGallery: React.FC<PortfolioGalleryProps> = ({
                             : 'glass-pill hover:border-[#D49B54]/50 text-[#F7F2EB]'
                         }`}
                         title="افزودن سریع با مشخصات پیش‌فرض"
+                        aria-label={`افزودن سریع ${product.title} به سبد سفارش`}
                       >
                         {isAdded ? (
                           <span className="flex items-center gap-1">
@@ -383,6 +425,7 @@ export const PortfolioGallery: React.FC<PortfolioGalleryProps> = ({
                         type="button"
                         onClick={() => onCustomizeProduct(product)}
                         className="btn-honey-gold px-4 py-2.5 rounded-xl text-xs font-extrabold cursor-pointer"
+                        aria-label={`شخصی‌سازی و سفارش ${product.title}`}
                       >
                         سفارش و حکاکی
                       </button>

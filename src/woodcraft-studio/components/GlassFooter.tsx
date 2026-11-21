@@ -13,6 +13,7 @@ import {
   PackageSearch,
   Lock,
 } from 'lucide-react';
+import { CATEGORIES, type ProductCategory } from '../data/products';
 import type { SiteSettings } from '../store/types';
 
 interface GlassFooterProps {
@@ -20,6 +21,7 @@ interface GlassFooterProps {
   onOpenCustomProject: () => void;
   onJumpToCustomizer: () => void;
   onOpenTracking: () => void;
+  onBrowseCategory?: (category: ProductCategory) => void;
 }
 
 export const GlassFooter: React.FC<GlassFooterProps> = ({
@@ -27,6 +29,7 @@ export const GlassFooter: React.FC<GlassFooterProps> = ({
   onOpenCustomProject,
   onJumpToCustomizer,
   onOpenTracking,
+  onBrowseCategory,
 }) => {
   const intlPhone = settings.whatsappNumber.replace(/[^0-9]/g, '');
   const telegramId = settings.telegramId.replace(/^@+/, '').trim();
@@ -194,6 +197,34 @@ export const GlassFooter: React.FC<GlassFooterProps> = ({
                   <span>پاسخگویی: {settings.workingHours}</span>
                 </div>
               </div>
+            </div>
+          </div>
+
+          <div className="py-6 grid grid-cols-1 lg:grid-cols-12 gap-5 border-b border-[#FFF0DC]/10">
+            <nav aria-label="خرید دست‌سازه چوبی بر اساس نوع محصول" className="lg:col-span-7">
+              <h4 className="text-sm font-extrabold text-[#F7F2EB] mb-3">خرید بر اساس نوع محصول</h4>
+              <div className="flex flex-wrap gap-2">
+                {CATEGORIES.filter((category) => category.id !== 'all').map((category) => (
+                  <button
+                    key={category.id}
+                    type="button"
+                    onClick={() => onBrowseCategory?.(category.id)}
+                    className="px-3 py-2 rounded-full bg-[#FFF4E5]/7 border border-[#FFF0DC]/12 text-[11px] font-bold text-[#C8B9A6] hover:text-[#F7F2EB] hover:border-[#D49B54]/60 cursor-pointer"
+                  >
+                    {category.label} چوبی دست‌ساز
+                  </button>
+                ))}
+                <a href="#customizer" className="px-3 py-2 rounded-full bg-[#FFF4E5]/7 border border-[#FFF0DC]/12 text-[11px] font-bold text-[#C8B9A6] hover:text-[#F7F2EB] hover:border-[#D49B54]/60">حکاکی لیزری روی چوب</a>
+                <a href="#buying-guide" className="px-3 py-2 rounded-full bg-[#FFF4E5]/7 border border-[#FFF0DC]/12 text-[11px] font-bold text-[#C8B9A6] hover:text-[#F7F2EB] hover:border-[#D49B54]/60">راهنمای خرید دست‌سازه چوبی</a>
+              </div>
+            </nav>
+            <div className="lg:col-span-5">
+              <h4 className="text-sm font-extrabold text-[#F7F2EB] mb-2">چرا خرید از کارگاه اُرسی؟</h4>
+              <p className="text-[11px] sm:text-xs text-[#C8B9A6] leading-relaxed">
+                هر محصول از چوب طبیعی و پس از تایید رگه توسط مشتری ساخته می‌شود؛ حکاکی اختصاصی رایگان،
+                بسته‌بندی ضدضربه، ضمانت سلامت چوب و ارسال به سراسر ایران مسیر خرید را شفاف و مطمئن می‌کند.
+              </p>
+              <a href="#top" className="inline-flex mt-3 text-[11px] font-black text-[#E5B26D] hover:text-[#F5D08A]">بازگشت به بالای صفحه ↑</a>
             </div>
           </div>
 
