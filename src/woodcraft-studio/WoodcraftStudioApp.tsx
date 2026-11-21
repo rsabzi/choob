@@ -1,10 +1,11 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { CheckCircle2, ShoppingBag } from 'lucide-react';
 import {
   WoodProduct,
   WoodSpeciesId,
   OrderCartItem,
   woodById,
+  type ProductCategory,
 } from './data/products';
 import { useStudio } from './store/StoreContext';
 import { GlassHeader } from './components/GlassHeader';
@@ -21,6 +22,9 @@ import { OrderCheckoutDrawer } from './components/OrderCheckoutDrawer';
 import { OrderTrackingModal } from './components/OrderTrackingModal';
 import { GlassFooter } from './components/GlassFooter';
 import { FloatingContactDock } from './components/FloatingContactDock';
+import { StorefrontSeo } from './components/StorefrontSeo';
+import { OrderJourney } from './components/OrderJourney';
+import { SeoGuideSection } from './components/SeoGuideSection';
 
 function scrollToId(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -61,20 +65,32 @@ export const WoodcraftStudioApp: React.FC = () => {
   const selectedCustomizerProduct =
     activeProducts.find((p) => p.id === selectedProductId) ?? activeProducts[0];
 
+  const [portfolioCategoryRequest, setPortfolioCategoryRequest] = useState<{
+    category: ProductCategory;
+    nonce: number;
+  } | null>(null);
   const [inspectedModalProduct, setInspectedModalProduct] = useState<WoodProduct | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isTrackingOpen, setIsTrackingOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-
-  useEffect(() => {
-    document.title = `${settings.brandName} | دست‌سازه‌های چوبی سفارشی`;
-  }, [settings.brandName]);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => {
       setToastMessage((prev) => (prev === msg ? null : prev));
     }, 3400);
+  };
+
+  const browseCategory = (category: ProductCategory) => {
+    setPortfolioCategoryRequest({ category, nonce: Date.now() });
+    scrollToId('portfolio');
+  };
+
+  const focusPortfolioSearch = () => {
+    scrollToId('portfolio');
+    window.setTimeout(() => {
+      document.getElementById('portfolio-search')?.focus({ preventScroll: true });
+    }, 550);
   };
 
   const jumpToCustomizerWithProduct = (product: WoodProduct) => {
@@ -119,7 +135,14 @@ export const WoodcraftStudioApp: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#120E0A] text-[#F7F2EB] wood-grain-pattern relative selection:bg-[#D49B54]/30 overflow-x-clip">
+    <div id="top" className="min-h-screen bg-[#120E0A] text-[#F7F2EB] wood-grain-pattern relative selection:bg-[#D49B54]/30 overflow-x-clip">
+      <StorefrontSeo settings={settings} products={activeProducts} faqs={activeFaqs} />
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:right-3 focus:z-[100] focus:px-4 focus:py-2.5 focus:rounded-xl focus:bg-[#D49B54] focus:text-[#120E0A] focus:text-xs focus:font-black"
+      >
+        پرش به محتوای اصلی
+      </a>
       <GlassHeader
         brandName={settings.brandName}
         brandTagline={settings.brandTagline}
@@ -127,15 +150,24 @@ export const WoodcraftStudioApp: React.FC = () => {
         onOpenCart={() => setIsDrawerOpen(true)}
         onJumpToCustomizer={() => scrollToId('customizer')}
         onOpenTracking={() => setIsTrackingOpen(true)}
+        onSearchProducts={focusPortfolioSearch}
       />
 
-      <main>
+      <main id="main-content">
         <HeroSection
           products={activeProducts}
           woods={db.woods}
           settings={settings}
           onSelectProductForCustomizing={jumpToCustomizerWithProduct}
           onQuickInspect={(prod) => setInspectedModalProduct(prod)}
+          onBrowseCategory={browseCategory}
+          onStartCustomProject={() => scrollToId('custom-project')}
+        />
+
+        <OrderJourney
+          onBrowseCategory={browseCategory}
+          onJumpToCustomizer={() => scrollToId('customizer')}
+          onStartCustomProject={() => scrollToId('custom-project')}
         />
 
         <PortfolioGallery
@@ -144,6 +176,7 @@ export const WoodcraftStudioApp: React.FC = () => {
           onInspectProduct={(prod) => setInspectedModalProduct(prod)}
           onCustomizeProduct={jumpToCustomizerWithProduct}
           onQuickAddToOrder={(prod) => handleQuickAddToOrder(prod)}
+          categoryRequest={portfolioCategoryRequest}
         />
 
         <ServicesSection
@@ -185,6 +218,12 @@ export const WoodcraftStudioApp: React.FC = () => {
           onOpenTracking={() => setIsTrackingOpen(true)}
         />
 
+        <SeoGuideSection
+          onBrowseCategory={browseCategory}
+          onJumpToCustomizer={() => scrollToId('customizer')}
+          onStartCustomProject={() => scrollToId('custom-project')}
+        />
+
         <ContactSection settings={settings} onSubmitMessage={submitContactMessage} />
       </main>
 
@@ -193,6 +232,7 @@ export const WoodcraftStudioApp: React.FC = () => {
         onOpenCustomProject={() => scrollToId('custom-project')}
         onJumpToCustomizer={() => scrollToId('customizer')}
         onOpenTracking={() => setIsTrackingOpen(true)}
+        onBrowseCategory={browseCategory}
       />
 
       <FloatingContactDock settings={settings} />

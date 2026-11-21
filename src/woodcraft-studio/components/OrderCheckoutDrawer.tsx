@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   X,
   Trash2,
@@ -80,6 +80,24 @@ export const OrderCheckoutDrawer: React.FC<OrderCheckoutDrawerProps> = ({
   const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
   const [couponMsg, setCouponMsg] = useState('');
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setSubmittedOrderCode(null);
+        setFormError('');
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const subtotal = items.reduce((acc, item) => acc + item.unitPrice * item.quantity, 0);
@@ -92,6 +110,14 @@ export const OrderCheckoutDrawer: React.FC<OrderCheckoutDrawerProps> = ({
       ? 0
       : settings.shippingCost;
   const grandTotal = subtotal - discountAmount + shippingCost;
+  const freeShippingRemaining = Math.max(
+    0,
+    settings.freeShippingThreshold - (subtotal - discountAmount)
+  );
+  const freeShippingProgress =
+    settings.freeShippingThreshold > 0
+      ? Math.min(100, ((subtotal - discountAmount) / settings.freeShippingThreshold) * 100)
+      : 100;
 
   const handleApplyCoupon = () => {
     const code = couponInput.trim().toUpperCase();
@@ -174,6 +200,9 @@ export const OrderCheckoutDrawer: React.FC<OrderCheckoutDrawerProps> = ({
     <div
       className="fixed inset-0 z-50 flex justify-end bg-black/75 backdrop-blur-md"
       onClick={handleResetAndClose}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="checkout-title"
     >
       <div
         className="glass-panel-elevated w-full max-w-xl h-full overflow-y-auto p-4 pb-safe sm:p-7 flex flex-col animate-fadeIn"
@@ -185,7 +214,7 @@ export const OrderCheckoutDrawer: React.FC<OrderCheckoutDrawerProps> = ({
               <ShoppingBag className="w-5 h-5" />
             </div>
             <div className="min-w-0">
-              <h3 className="text-base sm:text-lg font-black text-[#F7F2EB]">سبد سفارش اختصاصی کارگاه</h3>
+              <h3 id="checkout-title" className="text-base sm:text-lg font-black text-[#F7F2EB]">سبد سفارش اختصاصی کارگاه</h3>
               <p className="text-xs text-[#C8B9A6]">
                 تایید مشخصات چوب، حکاکی لیزری و ثبت سفارش مستقیم برای مدیریت
               </p>
@@ -200,6 +229,42 @@ export const OrderCheckoutDrawer: React.FC<OrderCheckoutDrawerProps> = ({
             <X className="w-5 h-5" />
           </button>
         </div>
+
+        {!submittedOrderCode && (
+          <ol className="grid grid-cols-3 gap-1.5 pt-4 list-none" aria-label="مراحل ثبت سفارش">
+            {['بررسی اقلام', 'مشخصات گیرنده', 'ثبت و کد پیگیری'].map((label, index) => (
+              <li key={label} className="rounded-xl bg-[#FFF4E5]/6 border border-[#FFF0DC]/10 px-2 py-2 text-center">
+                <span className="block text-[10px] font-black text-[#D49B54]">قدم {toPersianDigits(index + 1)}</span>
+                <span className="block text-[10px] sm:text-[11px] font-bold text-[#F7F2EB] mt-0.5">{label}</span>
+              </li>
+            ))}
+          </ol>
+        )}
+
+        {!submittedOrderCode && items.length > 0 && (
+          <div className="mt-4 glass-panel rounded-2xl p-3.5" aria-live="polite">
+            <div className="flex items-center justify-between gap-3 text-[11px]">
+              <span className="font-bold text-[#F7F2EB]">
+                {freeShippingRemaining === 0 ? 'ارسال سفارش شما رایگان شد' : 'پیشرفت تا ارسال رایگان'}
+              </span>
+              <span className="text-[#C8B9A6]">
+                {freeShippingRemaining === 0
+                  ? 'بدون هزینه ارسال'
+                  : `${formatTomans(freeShippingRemaining)} تومان مانده`}
+              </span>
+            </div>
+            <div
+              className="h-2 rounded-full bg-white/10 mt-2 overflow-hidden"
+              role="progressbar"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={Math.round(freeShippingProgress)}
+              aria-label="پیشرفت تا ارسال رایگان"
+            >
+              <div className="h-full rounded-full bg-gradient-to-l from-[#4E9F6E] to-[#D49B54] transition-all duration-500" style={{ width: `${freeShippingProgress}%` }} />
+            </div>
+          </div>
+        )}
 
         {submittedOrderCode ? (
           <div className="py-8 space-y-6 text-center">
@@ -351,6 +416,7 @@ export const OrderCheckoutDrawer: React.FC<OrderCheckoutDrawerProps> = ({
                             type="button"
                             onClick={() => onUpdateQuantity(item.cartItemId, -1)}
                             className="w-6 h-6 rounded-md bg-white/10 text-xs font-bold text-[#F7F2EB] cursor-pointer"
+                            aria-label={`کاهش تعداد ${item.title}`}
                           >
                             −
                           </button>
@@ -359,6 +425,7 @@ export const OrderCheckoutDrawer: React.FC<OrderCheckoutDrawerProps> = ({
                             type="button"
                             onClick={() => onUpdateQuantity(item.cartItemId, 1)}
                             className="w-6 h-6 rounded-md bg-white/10 text-xs font-bold text-[#F7F2EB] cursor-pointer"
+                            aria-label={`افزایش تعداد ${item.title}`}
                           >
                             +
                           </button>
@@ -381,17 +448,20 @@ export const OrderCheckoutDrawer: React.FC<OrderCheckoutDrawerProps> = ({
               </div>
 
               {formError && (
-                <div className="p-3 rounded-xl bg-[#D9534F]/20 border border-[#D9534F] text-xs text-[#F7F2EB]">
+                <div role="alert" className="p-3 rounded-xl bg-[#D9534F]/20 border border-[#D9534F] text-xs text-[#F7F2EB]">
                   {formError}
                 </div>
               )}
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs text-[#C8B9A6] mb-1">نام و نام خانوادگی *</label>
+                  <label htmlFor="checkout-full-name" className="block text-xs text-[#C8B9A6] mb-1">نام و نام خانوادگی *</label>
                   <div className="relative">
                     <User className="w-4 h-4 text-[#8A7968] absolute right-3.5 top-3.5" />
                     <input
+                      id="checkout-full-name"
+                      name="fullName"
+                      autoComplete="name"
                       type="text"
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
@@ -401,10 +471,14 @@ export const OrderCheckoutDrawer: React.FC<OrderCheckoutDrawerProps> = ({
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs text-[#C8B9A6] mb-1">شماره موبایل (واتساپ / تماس) *</label>
+                  <label htmlFor="checkout-phone" className="block text-xs text-[#C8B9A6] mb-1">شماره موبایل (واتساپ / تماس) *</label>
                   <div className="relative">
                     <Phone className="w-4 h-4 text-[#8A7968] absolute right-3.5 top-3.5" />
                     <input
+                      id="checkout-phone"
+                      name="phone"
+                      autoComplete="tel"
+                      inputMode="tel"
                       type="tel"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
@@ -417,8 +491,11 @@ export const OrderCheckoutDrawer: React.FC<OrderCheckoutDrawerProps> = ({
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-xs text-[#C8B9A6] mb-1">شهر</label>
+                  <label htmlFor="checkout-city" className="block text-xs text-[#C8B9A6] mb-1">شهر</label>
                   <input
+                    id="checkout-city"
+                    name="city"
+                    autoComplete="address-level2"
                     type="text"
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
@@ -427,10 +504,13 @@ export const OrderCheckoutDrawer: React.FC<OrderCheckoutDrawerProps> = ({
                   />
                 </div>
                 <div className="sm:col-span-2">
-                  <label className="block text-xs text-[#C8B9A6] mb-1">نشانی ارسال (اختیاری در مرحله اول)</label>
+                  <label htmlFor="checkout-address" className="block text-xs text-[#C8B9A6] mb-1">نشانی ارسال (اختیاری در مرحله اول)</label>
                   <div className="relative">
                     <MapPin className="w-4 h-4 text-[#8A7968] absolute right-3.5 top-3.5" />
                     <input
+                      id="checkout-address"
+                      name="address"
+                      autoComplete="street-address"
                       type="text"
                       value={address}
                       onChange={(e) => setAddress(e.target.value)}

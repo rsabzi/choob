@@ -42,6 +42,20 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
     }
   }, [product]);
 
+  useEffect(() => {
+    if (!product) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, [product, onClose]);
+
   if (!product) return null;
 
   const woodObj = woodById(woods, selectedWood);
@@ -52,6 +66,9 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-6 bg-black/75 backdrop-blur-md animate-fadeIn"
       onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="product-detail-title"
     >
       <div
         className="glass-panel-elevated rounded-[24px] sm:rounded-[28px] max-w-4xl w-full max-h-[92vh] overflow-y-auto p-4 sm:p-8 relative"
@@ -73,7 +90,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
             <div className="relative rounded-2xl overflow-hidden aspect-[4/3.5] bg-[#16100B]">
               <img
                 src={product.image}
-                alt={product.title}
+                alt={`${product.title}؛ نمونه دست‌سازه چوب طبیعی با امکان انتخاب چوب و حکاکی اختصاصی`}
                 className="w-full h-full object-cover"
               />
               <div
@@ -134,7 +151,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                 <Sparkles className="w-3.5 h-3.5" />
                 دست‌سازه تزیینی و کاربردی کارگاه اُرسی
               </span>
-              <h3 className="text-xl sm:text-2xl font-black text-[#F7F2EB] mt-1 leading-snug">
+              <h3 id="product-detail-title" className="text-xl sm:text-2xl font-black text-[#F7F2EB] mt-1 leading-snug">
                 {product.title}
               </h3>
               <p className="text-xs sm:text-sm text-[#C8B9A6] mt-2 leading-relaxed">
@@ -156,6 +173,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                       key={wId}
                       type="button"
                       onClick={() => setSelectedWood(wId)}
+                      aria-pressed={active}
                       className={`p-2.5 rounded-xl border text-right flex items-center gap-2.5 transition-all cursor-pointer ${
                         active
                           ? 'bg-[#FFF4E5]/15 border-[#D49B54]'

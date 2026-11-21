@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { CircleHelp, ChevronDown, PhoneCall } from 'lucide-react';
+import { toIntlPhone } from '../data/products';
 import type { FaqItem } from '../store/types';
 
 interface FaqSectionProps {
@@ -32,6 +33,9 @@ export const FaqSection: React.FC<FaqSectionProps> = ({ faqs, phoneDisplay, onOp
               <div key={faq.id} className="glass-panel rounded-2xl overflow-hidden">
                 <button
                   type="button"
+                  id={`faq-button-${faq.id}`}
+                  aria-expanded={open}
+                  aria-controls={`faq-panel-${faq.id}`}
                   onClick={() => setOpenId(open ? null : faq.id)}
                   className="w-full px-5 py-4 flex items-center justify-between gap-3 text-right cursor-pointer"
                 >
@@ -45,7 +49,12 @@ export const FaqSection: React.FC<FaqSectionProps> = ({ faqs, phoneDisplay, onOp
                   />
                 </button>
                 {open && (
-                  <div className="px-5 pb-5 text-xs sm:text-sm text-[#C8B9A6] leading-relaxed border-t border-[#FFF0DC]/8 pt-4">
+                  <div
+                    id={`faq-panel-${faq.id}`}
+                    role="region"
+                    aria-labelledby={`faq-button-${faq.id}`}
+                    className="px-5 pb-5 text-xs sm:text-sm text-[#C8B9A6] leading-relaxed border-t border-[#FFF0DC]/8 pt-4"
+                  >
                     {faq.answer}
                   </div>
                 )}
@@ -59,7 +68,9 @@ export const FaqSection: React.FC<FaqSectionProps> = ({ faqs, phoneDisplay, onOp
             <PhoneCall className="w-5 h-5 text-[#D49B54]" />
             <p className="text-xs sm:text-sm text-[#C8B9A6]">
               سوال دیگری دارید یا وضعیت سفارشتان را می‌خواهید بدانید؟ با کارگاه در تماس باشید:{' '}
-              <strong className="text-[#F7F2EB]">{phoneDisplay}</strong>
+              <a href={`tel:+${toIntlPhone(phoneDisplay)}`} className="font-extrabold text-[#F7F2EB] hover:text-[#E5B26D]">
+                {phoneDisplay}
+              </a>
             </p>
           </div>
           <button

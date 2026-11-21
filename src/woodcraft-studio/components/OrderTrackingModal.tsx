@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   X,
   PackageSearch,
@@ -42,6 +42,20 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({
   const [phone, setPhone] = useState('');
   const [result, setResult] = useState<Order | null | undefined>(undefined);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const handleSearch = (e: React.FormEvent) => {
@@ -58,6 +72,9 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md"
       onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="tracking-title"
     >
       <div
         className="glass-panel-elevated rounded-[26px] w-full max-w-lg max-h-[92vh] overflow-y-auto p-4 pb-safe sm:p-7 animate-fadeIn"
@@ -69,7 +86,7 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({
               <PackageSearch className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base sm:text-lg font-black text-[#F7F2EB]">پیگیری سفارش</h3>
+              <h3 id="tracking-title" className="text-base sm:text-lg font-black text-[#F7F2EB]">پیگیری سفارش</h3>
               <p className="text-[11px] text-[#C8B9A6]">
                 وضعیت ساخت و ارسال سفارشتان را لحظه‌ای ببینید
               </p>
@@ -87,8 +104,10 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({
 
         <form onSubmit={handleSearch} className="py-5 space-y-3">
           <div>
-            <label className="block text-xs text-[#C8B9A6] mb-1.5">کد پیگیری سفارش</label>
+            <label htmlFor="tracking-code" className="block text-xs text-[#C8B9A6] mb-1.5">کد پیگیری سفارش</label>
             <input
+              id="tracking-code"
+              autoComplete="off"
               type="text"
               dir="ltr"
               value={code}
@@ -98,12 +117,15 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({
             />
           </div>
           <div>
-            <label className="block text-xs text-[#C8B9A6] mb-1.5">
+            <label htmlFor="tracking-phone" className="block text-xs text-[#C8B9A6] mb-1.5">
               شماره موبایلی که با آن سفارش دادید
             </label>
             <div className="relative">
               <Phone className="w-4 h-4 text-[#8A7968] absolute right-3.5 top-3.5" />
               <input
+                id="tracking-phone"
+                autoComplete="tel"
+                inputMode="tel"
                 type="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
@@ -121,6 +143,7 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({
           </button>
         </form>
 
+        <div aria-live="polite">
         {result === null && (
           <div className="glass-panel rounded-2xl p-5 text-center space-y-2">
             <SearchX className="w-8 h-8 text-[#E87F7F] mx-auto" />
@@ -300,6 +323,7 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({
             )}
           </div>
         )}
+        </div>
       </div>
     </div>
   );

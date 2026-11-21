@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://chooby.vercel.app/sitemap.xml
+Host: https://chooby.vercel.app

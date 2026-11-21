@@ -24,6 +24,8 @@ interface HeroSectionProps {
   settings: SiteSettings;
   onSelectProductForCustomizing: (product: WoodProduct) => void;
   onQuickInspect: (product: WoodProduct) => void;
+  onBrowseCategory?: (category: 'wall-clock' | 'laptop-stand' | 'phone-dock' | 'desk-accessories') => void;
+  onStartCustomProject?: () => void;
 }
 
 const STAT_ICONS = [ShieldCheck, Award, CheckCircle2];
@@ -34,6 +36,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   settings,
   onSelectProductForCustomizing,
   onQuickInspect,
+  onBrowseCategory,
+  onStartCustomProject,
 }) => {
   const [heroWoodId, setHeroWoodId] = useState<string>(woods[0]?.id ?? 'walnut');
   const activeWood = woodById(woods, heroWoodId);
@@ -43,7 +47,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   const phoneProduct = products[2];
 
   return (
-    <section className="relative pt-8 pb-16 md:pt-12 md:pb-24 px-4 sm:px-6 lg:px-8 overflow-hidden">
+    <section aria-labelledby="hero-title" className="relative pt-8 pb-16 md:pt-12 md:pb-24 px-4 sm:px-6 lg:px-8 overflow-hidden">
       {/* Ambient Warm Light Orbs */}
       <div
         className="pointer-events-none absolute -top-24 right-1/4 w-[460px] h-[460px] rounded-full blur-[130px] opacity-35 transition-all duration-700"
@@ -62,7 +66,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               </span>
             </div>
 
-            <h1 className="text-3xl sm:text-5xl xl:text-[54px] font-black leading-[1.22] tracking-tight text-[#F7F2EB]">
+            <h1 id="hero-title" className="text-3xl sm:text-5xl xl:text-[54px] font-black leading-[1.22] tracking-tight text-[#F7F2EB]">
               {settings.heroTitleLead}{' '}
               <span className="bg-gradient-to-l from-[#F5D08A] via-[#D49B54] to-[#B86B35] bg-clip-text text-transparent">
                 {settings.heroTitleAccent}
@@ -94,6 +98,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                       key={wood.id}
                       type="button"
                       onClick={() => setHeroWoodId(wood.id)}
+                      aria-pressed={isSelected}
                       className={`px-3 py-2.5 rounded-xl flex items-center gap-2.5 text-right transition-all cursor-pointer border ${
                         isSelected
                           ? 'bg-[#FFF4E5]/15 border-[#D49B54] shadow-lg shadow-[#D49B54]/15 scale-[1.02]'
@@ -138,6 +143,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               </a>
             </div>
 
+            <nav aria-label="شروع سریع خرید دست‌سازه چوبی" className="flex flex-wrap items-center gap-2">
+              <span className="text-[11px] font-bold text-[#8A7968]">شروع سریع:</span>
+              <button type="button" onClick={() => onBrowseCategory?.('wall-clock')} className="px-3 py-2 rounded-full bg-[#FFF4E5]/7 border border-[#FFF0DC]/12 text-[11px] font-bold text-[#C8B9A6] hover:text-[#F7F2EB] hover:border-[#D49B54]/60 cursor-pointer">ساعت دیواری چوبی</button>
+              <button type="button" onClick={() => onBrowseCategory?.('laptop-stand')} className="px-3 py-2 rounded-full bg-[#FFF4E5]/7 border border-[#FFF0DC]/12 text-[11px] font-bold text-[#C8B9A6] hover:text-[#F7F2EB] hover:border-[#D49B54]/60 cursor-pointer">استند لپ‌تاپ چوبی</button>
+              <a href="#customizer" className="px-3 py-2 rounded-full bg-[#FFF4E5]/7 border border-[#FFF0DC]/12 text-[11px] font-bold text-[#C8B9A6] hover:text-[#F7F2EB] hover:border-[#D49B54]/60">حکاکی لیزری روی چوب</a>
+              <button type="button" onClick={onStartCustomProject} className="px-3 py-2 rounded-full bg-[#FFF4E5]/7 border border-[#FFF0DC]/12 text-[11px] font-bold text-[#C8B9A6] hover:text-[#F7F2EB] hover:border-[#D49B54]/60 cursor-pointer">ساخت از روی عکس</button>
+            </nav>
+
             {/* Trust Metrics (editable from admin) */}
             <div className="grid grid-cols-3 gap-2 sm:gap-5 pt-3 w-full border-t border-[#FFF0DC]/10">
               {settings.heroStats.slice(0, 3).map((stat, idx) => {
@@ -172,8 +185,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               <div className="relative rounded-[22px] overflow-hidden aspect-[4/3.4] sm:aspect-[4/3.6] lg:aspect-[4/4.3] bg-[#18120C]">
                 <img
                   src={settings.heroImage}
-                  alt="مجموعه دست‌سازه‌های چوبی کارگاه"
+                  alt="مجموعه دست‌سازه‌های چوب طبیعی سفارشی شامل ساعت دیواری، استند لپ‌تاپ و اکسسوری رومیزی"
                   className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
+                  fetchPriority="high"
+                  decoding="async"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#120E0A] via-[#120E0A]/25 to-transparent" />
 
@@ -182,6 +197,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                     type="button"
                     onClick={() => onQuickInspect(clockProduct)}
                     className="absolute top-3.5 right-3.5 sm:top-5 sm:right-5 z-20 glass-panel hover:border-[#D49B54] px-3 py-2 sm:px-3.5 rounded-2xl text-right transition-all cursor-pointer group/spot max-w-[172px] min-[420px]:max-w-[230px]"
+                    aria-label={`مشاهده جزئیات و قیمت ${clockProduct.title}`}
                   >
                     <div className="flex items-center gap-2">
                       <span className="w-2.5 h-2.5 rounded-full bg-[#D49B54] ring-4 ring-[#D49B54]/25 shrink-0" />
@@ -200,6 +216,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                     type="button"
                     onClick={() => onQuickInspect(laptopProduct)}
                     className="absolute bottom-24 sm:bottom-28 right-3.5 sm:right-5 z-20 glass-panel hover:border-[#D49B54] px-3 py-2 sm:px-3.5 rounded-2xl text-right transition-all cursor-pointer group/spot max-w-[172px] min-[420px]:max-w-[230px]"
+                    aria-label={`مشاهده جزئیات و قیمت ${laptopProduct.title}`}
                   >
                     <div className="flex items-center gap-2">
                       <span className="w-2.5 h-2.5 rounded-full bg-[#4E9F6E] ring-4 ring-[#4E9F6E]/25 shrink-0" />
